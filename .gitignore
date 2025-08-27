@@ -1,0 +1,49 @@
+# ---------------------
+# .NET / ASP.NET ignores
+# ---------------------
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.user
+*.suo
+*.vs/
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Visual Studio
+.vscode/
+*.swp
+
+# Entity Framework migrations backup
+Migrations/
+
+# ---------------------
+# Node / React ignores
+# ---------------------
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# React build output (don't commit, served from backend instead)
+frontend/build/
+
+# ---------------------
+# OS files
+# ---------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------
+# Misc
+# ---------------------
+*.tgz
+*.tar.gz
+*.zip
