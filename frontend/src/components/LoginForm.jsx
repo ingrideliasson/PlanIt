@@ -1,12 +1,14 @@
 import { useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginForm() {
+export default function LoginForm({onLogin, switchToRegister}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,14 +18,11 @@ export default function LoginForm() {
         try {
             const res = await api.post("/auth/login", { email, password });
             const token = res.data.token;
-
             if (!token) throw new Error("No token returned from server.");
 
             localStorage.setItem("token", token); // save JWT
-            setMessage("Login successful!");
-            setError("");
-
-            // TODO: redirect to dashboard/start page
+            if (onLogin) onLogin(token);
+            navigate("/dashboard");
         } catch (err) {
             // Extract meaningful message from axios error
             let errorMsg = "Login failed. Please check your credentials.";
@@ -45,6 +44,7 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={handleSubmit}>
+            <h2>Login</h2>
             <input
                 type="email"
                 placeholder="Email"
@@ -74,7 +74,11 @@ export default function LoginForm() {
                 </button>
             </div>
             <button type="submit">Login</button>
-
+            <p>No account?{" "}
+                <button type="button" onClick={switchToRegister}>
+                    Register
+                </button>
+            </p>
             {message && <p style={{ color: "green" }}>{message}</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
         </form>

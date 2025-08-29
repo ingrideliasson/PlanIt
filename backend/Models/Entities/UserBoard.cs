@@ -9,7 +9,7 @@ namespace backend.Models
     public string Title { get; set; } = "";
 
     public string? UserId { get; set; } //FK to IdentityUser
-    public IdentityUser User { get; set; } = null!;
+    public ApplicationUser User { get; set; } = null!;
 
     public ICollection<TaskList> TaskLists { get; set; } = new List<TaskList>();
 }

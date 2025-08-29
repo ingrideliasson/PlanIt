@@ -14,12 +14,12 @@ namespace backend.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _config;
 
-        public AuthController(UserManager<IdentityUser> userManager,
-                                SignInManager<IdentityUser> signInManager,
+        public AuthController(UserManager<ApplicationUser> userManager,
+                                SignInManager<ApplicationUser> signInManager,
                                 IConfiguration config)
         {
             _userManager = userManager;
@@ -30,7 +30,7 @@ namespace backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
+            var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email, FirstName = dto.FirstName, LastName = dto.LastName};
 
             // Validate password BEFORE creating user
             var passwordValidators = _userManager.PasswordValidators;
@@ -65,7 +65,9 @@ namespace backend.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty)
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new Claim("firstName", user.FirstName ?? string.Empty),
+                new Claim("lastName", user.LastName ?? string.Empty)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -94,7 +96,9 @@ namespace backend.Controllers
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                Email = user.Email
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
 
             return Ok(dto);
