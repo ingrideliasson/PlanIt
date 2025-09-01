@@ -1,8 +1,8 @@
 # ---------------------
 # .NET / ASP.NET ignores
 # ---------------------
-bin/
-obj/
+backend/bin/
+**/obj/
 *.exe
 *.dll
 *.pdb
@@ -20,7 +20,7 @@ obj/
 *.swp
 
 # Entity Framework migrations backup
-Migrations/
+backend/Migrations/
 
 # ---------------------
 # Node / React ignores
