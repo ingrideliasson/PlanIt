@@ -4,6 +4,7 @@ using backend.Models.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
@@ -12,9 +13,9 @@ namespace backend.Controllers
     public class UserBoardController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserBoardController(AppDbContext context, UserManager<IdentityUser> userManager)
+        public UserBoardController(AppDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -22,20 +23,22 @@ namespace backend.Controllers
 
         // GET all boards (dev/admin only)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var boards = await _context.UserBoards.ToListAsync();
             var result = boards.Select(b => new UserBoardDto
             {
                 Id = b.Id,
-                Title = b.Title,
-                UserId = b.UserId!
+                Title = b.Title ?? "",
+                UserId = b.UserId ?? ""
             });
             return Ok(result);
         }
 
         // GET board by id (dev/admin only)
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get(int id)
         {
             var b = await _context.UserBoards.FindAsync(id);
@@ -44,14 +47,15 @@ namespace backend.Controllers
             var result = new UserBoardDto
             {
                 Id = b.Id,
-                Title = b.Title,
-                UserId = b.UserId!
+                Title = b.Title ?? "",
+                UserId = b.UserId ?? ""
             };
             return Ok(result);
         }
 
-        // GET board with nested lists and tasks for frontend board view. Board -> all list in board -> all tasks on list
+        // GET board with nested lists and tasks for frontend board view
         [HttpGet("{id}/details")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetNested(int id)
         {
             var board = await _context.UserBoards
@@ -64,15 +68,15 @@ namespace backend.Controllers
             var nestedDto = new UserBoardNestedDto
             {
                 Id = board.Id,
-                Title = board.Title!,
+                Title = board.Title ?? "",
                 TaskLists = board.TaskLists.Select(l => new TaskListNestedDto
                 {
                     Id = l.Id,
-                    Title = l.Title!,
+                    Title = l.Title ?? "",
                     TaskItems = l.TaskItems.Select(t => new TaskItemNestedDto
                     {
                         Id = t.Id,
-                        Title = t.Title!,
+                        Title = t.Title ?? "",
                         Description = t.Description,
                         IsCompleted = t.IsCompleted
                     }).ToList()
@@ -84,12 +88,15 @@ namespace backend.Controllers
 
         // POST new board
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(UserBoardCreateDto dto)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized("User not found");
+
             var board = new UserBoard
             {
-                Title = dto.Title,
+                Title = dto.Title ?? "",
                 UserId = user.Id
             };
 
@@ -108,12 +115,17 @@ namespace backend.Controllers
 
         // PUT update board
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, UserBoardUpdateDto dto)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
             var board = await _context.UserBoards.FindAsync(id);
             if (board == null) return NotFound();
+            if (board.UserId != user.Id) return Forbid();
 
-            board.Title = dto.Title;
+            board.Title = dto.Title ?? "";
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -121,10 +133,15 @@ namespace backend.Controllers
 
         // DELETE board
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
             var board = await _context.UserBoards.FindAsync(id);
             if (board == null) return NotFound();
+            if (board.UserId != user.Id) return Forbid();
 
             _context.UserBoards.Remove(board);
             await _context.SaveChangesAsync();
@@ -133,9 +150,11 @@ namespace backend.Controllers
 
         // GET boards for current user
         [HttpGet("mine")]
+        [Authorize]
         public async Task<IActionResult> GetMyBoards()
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
 
             var boards = await _context.UserBoards
                 .Where(b => b.UserId == user.Id)
@@ -144,11 +163,12 @@ namespace backend.Controllers
             var result = boards.Select(b => new UserBoardDto
             {
                 Id = b.Id,
-                Title = b.Title,
-                UserId = b.UserId!
+                Title = b.Title ?? "",
+                UserId = b.UserId ?? ""
             });
 
             return Ok(result);
         }
     }
 }
+

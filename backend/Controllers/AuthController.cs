@@ -7,7 +7,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using backend.Models.Dto;
 
-
 namespace backend.Controllers
 {
     [ApiController]
@@ -19,29 +18,25 @@ namespace backend.Controllers
         private readonly IConfiguration _config;
 
         public AuthController(UserManager<ApplicationUser> userManager,
-                                SignInManager<ApplicationUser> signInManager,
-                                IConfiguration config)
+                              SignInManager<ApplicationUser> signInManager,
+                              IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
         }
 
+        // REGISTER
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email, FirstName = dto.FirstName, LastName = dto.LastName};
-
-            // Validate password BEFORE creating user
-            var passwordValidators = _userManager.PasswordValidators;
-            foreach (var validator in passwordValidators)
+            var user = new ApplicationUser
             {
-                var result = await validator.ValidateAsync(_userManager, user, dto.Password);
-                if (!result.Succeeded)
-                {
-                    return BadRequest(result.Errors.Select(e => e.Description));
-                }
-            }
+                UserName = dto.Email,
+                Email = dto.Email,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName
+            };
 
             var createResult = await _userManager.CreateAsync(user, dto.Password);
             if (!createResult.Succeeded)
@@ -49,19 +44,48 @@ namespace backend.Controllers
                 return BadRequest(createResult.Errors.Select(e => e.Description));
             }
 
-            return Ok();
+            return Ok(new { message = "User registered successfully." });
         }
 
+        // LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null) return Unauthorized(new { message = "Invalid email or password." });
+
+            var pwResult = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+            if (!pwResult.Succeeded) return Unauthorized(new { message = "Invalid email or password." });
+
+            var token = GenerateJwtToken(user);
+
+            return Ok(new { token });
+        }
+
+        // GET CURRENT USER
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var pw = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-            if (!pw.Succeeded) return Unauthorized();
+            var dto = new UserDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
 
-            var claims = new System.Collections.Generic.List<System.Security.Claims.Claim>
+            return Ok(dto);
+        }
+
+        // Helper: JWT generation
+        private string GenerateJwtToken(ApplicationUser user)
+        {
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
@@ -81,27 +105,7 @@ namespace backend.Controllers
                 signingCredentials: creds
             );
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return Ok(new { token = jwt });
-        }
-
-        [Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> GetMe()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return Unauthorized();
-
-            var dto = new UserDto
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
-
-            return Ok(dto);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
