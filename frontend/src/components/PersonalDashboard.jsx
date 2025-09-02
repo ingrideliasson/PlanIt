@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import useCurrentUser from "../hooks/useCurrentUser";
 import Header from "./Header";
 import api, { setAuthToken } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function PersonalDashboard({ onLogout }) {
   const user = useCurrentUser();
+  const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,38 +101,38 @@ export default function PersonalDashboard({ onLogout }) {
             </div>
 
             {/* Boards Section */}
-            <section className="justify-self-center lg:justify-self-start w-full max-w-xs sm:max-w-sm md:max-w-md">
+            <section className="justify-self-center lg:justify-self-start w-full max-w-xs sm:max-w-sm md:max-w-sm">
               <h2 className="text-white font-montserrat text-2xl md:text-3xl lg:text-4xl mb-4 md:mb-8 text-center">
                 Your boards
               </h2>
 
               <div className="space-y-4 sm:space-y-5 max-h-[60vh] overflow-y-auto pr-2 scrollbar-thin">
                 {loading ? (
-                  <p className="text-white">Loading boards...</p>
+                  <p className="text-white font-montserrat">Loading boards...</p>
                 ) : boards.length === 0 ? (
-                  <p className="text-white">No boards yet</p>
+                  <p className="text-white font-montserrat">No boards yet</p>
                 ) : (
                   boards.map(board => (
                     <div
                       key={board.id}
-                      className="w-full py-4 md:py-6 px-4 rounded-full bg-fuchsia-900 hover:bg-fuchsia-800 text-white flex justify-between items-center"
+                      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900  text-white font-montserrat text-lg flex justify-between items-center "
                     >
                       <span
                         className="cursor-pointer"
-                        onClick={() => window.location.href = `/boards/${board.id}`}
+                        onClick={() => navigate(`/boards/${board.id}`)}
                       >
                         {board.title}
                       </span>
 
                       <div className="space-x-2">
                         <button
-                          className="bg-yellow-500 px-2 rounded text-black"
+                          className="text-pink-600 text-sm font-opensans hover:underline"
                           onClick={() => handleEditBoard(board)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-500 px-2 rounded text-white"
+                          className="text-pink-600 text-sm font-opensans hover:underline hover:text-pink-600"
                           onClick={() => handleDeleteBoard(board.id)}
                         >
                           Delete
@@ -143,8 +145,8 @@ export default function PersonalDashboard({ onLogout }) {
                 {/* Add New Board */}
                 <button
                   type="button"
-                  className="w-full py-4 md:py-6 rounded-full text-white text-lg sm:text-xl font-medium
-                            bg-fuchsia-900 opacity-50 hover:bg-fuchsia-800 font-montserrat"
+                  className="w-full py-4 md:py-6 rounded-xl text-white text-lg
+                            bg-fuchsia-900 opacity-50 hover:opacity-100 font-montserrat"
                   onClick={handleCreateBoard}
                 >
                   Add new...

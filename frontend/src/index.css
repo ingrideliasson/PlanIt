@@ -23,3 +23,15 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 }
+
+.board-scroll::-webkit-scrollbar {
+  height: 12px;
+}
+.board-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #a78bfa #f3f4f6;
+}
+
+.board-scroll {
+  overflow-x: scroll !important;
+}

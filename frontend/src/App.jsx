@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PersonalDashboard from "./components/PersonalDashboard";
 import AuthPage from "./components/AuthPage";
+import BoardView from "./components/BoardView";
 import { setAuthToken } from "./services/api";
 
 function ProtectedRoute({ token, children }) {
@@ -31,6 +32,14 @@ export default function App() {
           element={
             <ProtectedRoute token={token}>
               <PersonalDashboard onLogout={handleLogout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/boards/:id"
+          element={
+            <ProtectedRoute token={token}>
+              <BoardView />
             </ProtectedRoute>
           }
         />
