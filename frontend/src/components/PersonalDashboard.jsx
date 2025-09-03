@@ -1,8 +1,13 @@
-import { useState, useEffect } from "react";
-import useCurrentUser from "../hooks/useCurrentUser";
-import Header from "./Header";
-import api, { setAuthToken } from "../services/api";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import api, { setAuthToken } from "../services/api";
+import Header from "./Header";
+import useCurrentUser from "../hooks/useCurrentUser";
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteOutline } from "react-icons/md";
+import { RxCross1 } from "react-icons/rx";
+
+
 
 export default function PersonalDashboard({ onLogout }) {
   const user = useCurrentUser();
@@ -10,13 +15,36 @@ export default function PersonalDashboard({ onLogout }) {
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Set token and fetch boards on mount
+  // Add board UI state
+  const [addingBoard, setAddingBoard] = useState(false);
+  const [newBoardTitle, setNewBoardTitle] = useState("");
+  const [addBoardLoading, setAddBoardLoading] = useState(false);
+
+  // Edit board UI state
+  const [editingBoardId, setEditingBoardId] = useState(null);
+  const [editedBoardTitle, setEditedBoardTitle] = useState("");
+
+  // Delete confirmation popover
+  const [confirmingDelete, setConfirmingDelete] = useState(null);
+  const popoverRef = useRef(null);
+
+  // Close popover on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+        setConfirmingDelete(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch boards on mount
   useEffect(() => {
     async function fetchBoards() {
       try {
         const token = localStorage.getItem("token");
         setAuthToken(token);
-
         const response = await api.get("/userboards/mine");
         setBoards(response.data);
       } catch (error) {
@@ -25,54 +53,66 @@ export default function PersonalDashboard({ onLogout }) {
         setLoading(false);
       }
     }
-
     fetchBoards();
   }, []);
 
   // CREATE board
-  async function handleCreateBoard() {
-    const title = prompt("Enter board title:");
+  async function submitAddBoard(e) {
+    e.preventDefault();
+    const title = newBoardTitle.trim();
     if (!title) return;
-
+    setAddBoardLoading(true);
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-
       const response = await api.post("/userboards", { Title: title });
-      setBoards([...boards, response.data]);
+      setBoards(prev => [...prev, response.data]);
+      setNewBoardTitle("");
+      setAddingBoard(false);
     } catch (error) {
       console.error("Error creating board:", error);
       alert("Failed to create board. Make sure you are logged in.");
+    } finally {
+      setAddBoardLoading(false);
     }
   }
 
   // EDIT board
-  async function handleEditBoard(board) {
-    const newTitle = prompt("Enter new title", board.title);
-    if (!newTitle) return;
+  function startBoardEdit(board) {
+    setEditingBoardId(board.id);
+    setEditedBoardTitle(board.title);
+  }
 
+  function cancelBoardEdit() {
+    setEditingBoardId(null);
+    setEditedBoardTitle("");
+  }
+
+  async function saveBoardTitle(boardId) {
+    const title = editedBoardTitle.trim();
+    if (!title) return cancelBoardEdit();
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-
-      await api.put(`/userboards/${board.id}`, { Title: newTitle });
-      setBoards(boards.map(b => (b.id === board.id ? { ...b, title: newTitle } : b)));
+      await api.put(`/userboards/${boardId}`, { Title: title });
+      setBoards(prev =>
+        prev.map(b => (b.id === boardId ? { ...b, title } : b))
+      );
     } catch (error) {
       console.error("Error updating board:", error);
       alert("Failed to update board.");
+    } finally {
+      cancelBoardEdit();
     }
   }
 
   // DELETE board
   async function handleDeleteBoard(boardId) {
-    if (!window.confirm("Are you sure you want to delete this board?")) return;
-
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-
       await api.delete(`/userboards/${boardId}`);
-      setBoards(boards.filter(b => b.id !== boardId));
+      setBoards(prev => prev.filter(b => b.id !== boardId));
     } catch (error) {
       console.error("Error deleting board:", error);
       alert("Failed to delete board.");
@@ -80,7 +120,7 @@ export default function PersonalDashboard({ onLogout }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-800 via-pink-800 to-yellow-400">
+    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-800 via-pink-800 to-yellow-400 relative">
       <Header onLogout={onLogout} />
 
       <main className="flex-1 flex items-center py-8 sm:py-10 lg:py-14">
@@ -115,27 +155,53 @@ export default function PersonalDashboard({ onLogout }) {
                   boards.map(board => (
                     <div
                       key={board.id}
-                      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900  text-white font-montserrat text-lg flex justify-between items-center "
+                      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900 text-white font-montserrat text-lg flex justify-between items-center"
                     >
-                      <span
-                        className="cursor-pointer"
-                        onClick={() => navigate(`/boards/${board.id}`)}
-                      >
-                        {board.title}
-                      </span>
+                      {editingBoardId === board.id ? (
+                        <input
+                          type="text"
+                          value={editedBoardTitle}
+                          onChange={(e) => setEditedBoardTitle(e.target.value)}
+                          onBlur={() => saveBoardTitle(board.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveBoardTitle(board.id);
+                            if (e.key === "Escape") cancelBoardEdit();
+                          }}
+                          autoFocus
+                          className="bg-fuchsia-800 text-white rounded-md focus:outline-none"
+                        />
+                      ) : (
+                        <span
+                          className="cursor-pointer"
+                          onClick={() => navigate(`/boards/${board.id}`)}
+                        >
+                          {board.title}
+                        </span>
+                      )}
 
                       <div className="space-x-2">
                         <button
-                          className="text-pink-600 text-sm font-opensans hover:underline"
-                          onClick={() => handleEditBoard(board)}
+                          className="text-amber-500 text-xl hover:text-amber-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startBoardEdit(board);
+                          }}
                         >
-                          Edit
+                          < CiEdit />
                         </button>
                         <button
-                          className="text-pink-600 text-sm font-opensans hover:underline hover:text-pink-600"
-                          onClick={() => handleDeleteBoard(board.id)}
+                          className="text-amber-600 text-xl hover:text-amber-500"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setConfirmingDelete({
+                              type: "board",
+                              boardId: board.id,
+                              position: { top: rect.bottom, left: rect.left }
+                            });
+                          }}
                         >
-                          Delete
+                          < MdDeleteOutline />
                         </button>
                       </div>
                     </div>
@@ -143,19 +209,95 @@ export default function PersonalDashboard({ onLogout }) {
                 )}
 
                 {/* Add New Board */}
-                <button
-                  type="button"
-                  className="w-full py-4 md:py-6 rounded-xl text-white text-lg
-                            bg-fuchsia-900 opacity-50 hover:opacity-100 font-montserrat"
-                  onClick={handleCreateBoard}
+                {addingBoard ? (
+                  <form
+                    onSubmit={submitAddBoard}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setAddingBoard(false);
+                        setNewBoardTitle("");
+                      }
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={newBoardTitle}
+                      onChange={(e) => setNewBoardTitle(e.target.value)}
+                      placeholder="Board title..."
+                      className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-white placeholder:text-pink-200"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={addBoardLoading}
+                        className="px-3 py-1 rounded-lg bg-white text-black text-sm"
+                      >
+                        {addBoardLoading ? "Adding…" : "Add"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddingBoard(false);
+                          setNewBoardTitle("");
+                        }}
+                        className="py-1 bg-transparent text-white text-xl"
+                      >
+                        < RxCross1 />
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <button
+                    type="button"
+                    className="w-full py-4 md:py-6 rounded-xl text-white text-lg bg-fuchsia-900 opacity-50 hover:opacity-100 font-montserrat"
+                  onClick={() => setAddingBoard(true)}
                 >
-                  Add new...
+                  + Add new board
                 </button>
+                )}
               </div>
             </section>
           </div>
         </div>
       </main>
+
+      {/* Confirmation popover */}
+      {confirmingDelete && (
+        <div
+          ref={popoverRef}
+          className="absolute bg-white shadow-lg rounded-md p-3 text-sm z-50"
+          style={{
+            top: confirmingDelete.position.top + window.scrollY,
+            left: confirmingDelete.position.left
+          }}
+        >
+          <p className="mb-2 font-montserrat">
+            {confirmingDelete.type === "board"
+              ? "Delete this board?"
+              : "Are you sure?"}
+          </p>
+          <div className="flex gap-2">
+            <button
+              className="px-2 py-1 bg-orange-600 text-white rounded font-montserrat"
+              onClick={() => {
+                if (confirmingDelete.type === "board") {
+                  handleDeleteBoard(confirmingDelete.boardId);
+                }
+                setConfirmingDelete(null);
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="px-2 py-1 bg-gray-200 rounded font-montserrat"
+              onClick={() => setConfirmingDelete(null)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
