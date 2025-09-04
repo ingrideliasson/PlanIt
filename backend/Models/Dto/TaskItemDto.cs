@@ -7,6 +7,7 @@ namespace backend.Models.Dto
         public string? Description { get; set; }
         public bool IsCompleted { get; set; }
         public int TaskListId { get; set; }
+        public int Position { get; set; }
     }
 
     public class TaskItemCreateDto
@@ -18,7 +19,7 @@ namespace backend.Models.Dto
 
     public class TaskItemUpdateDto
     {
-        public string? Title { get; set; }
+        public string? Title { get; set; } = "";
         public string? Description { get; set; }
         public bool IsCompleted { get; set; }
     }
@@ -30,5 +31,13 @@ namespace backend.Models.Dto
         public string Title { get; set; } = "";
         public string? Description { get; set; }
         public bool IsCompleted { get; set; }
+        public int Position { get; set; }
+    }
+
+    // For moving tasks between and inside lists
+    public class TaskItemMoveDto
+    {
+        public int TaskListId { get; set; }
+        public int Position { get; set; }
     }
 }

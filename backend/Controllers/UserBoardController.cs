@@ -58,32 +58,36 @@ namespace backend.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetNested(int id)
         {
-            var board = await _context.UserBoards
-                .Include(b => b.TaskLists)
-                    .ThenInclude(l => l.TaskItems)
-                .FirstOrDefaultAsync(b => b.Id == id);
+        var board = await _context.UserBoards
+            .Include(b => b.TaskLists)
+                .ThenInclude(l => l.TaskItems)
+            .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (board == null) return NotFound();
+        if (board == null) return NotFound();
 
-            var nestedDto = new UserBoardNestedDto
+        var nestedDto = new UserBoardNestedDto
+        {
+            Id = board.Id,
+            Title = board.Title ?? "",
+            TaskLists = board.TaskLists.Select(l => new TaskListNestedDto
             {
-                Id = board.Id,
-                Title = board.Title ?? "",
-                TaskLists = board.TaskLists.Select(l => new TaskListNestedDto
-                {
-                    Id = l.Id,
-                    Title = l.Title ?? "",
-                    TaskItems = l.TaskItems.Select(t => new TaskItemNestedDto
+                Id = l.Id,
+                Title = l.Title ?? "",
+                TaskItems = l.TaskItems
+                    .OrderBy(t => t.Position) // 👈 enforce ordering here
+                    .Select(t => new TaskItemNestedDto
                     {
                         Id = t.Id,
                         Title = t.Title ?? "",
                         Description = t.Description,
-                        IsCompleted = t.IsCompleted
-                    }).ToList()
-                }).ToList()
-            };
+                        IsCompleted = t.IsCompleted,
+                        Position = t.Position
+                    })
+                    .ToList()
+            }).ToList()
+        };
 
-            return Ok(nestedDto);
+        return Ok(nestedDto);
         }
 
         // POST new board

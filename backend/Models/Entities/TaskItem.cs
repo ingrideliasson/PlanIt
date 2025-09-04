@@ -8,6 +8,8 @@ namespace backend.Models
         public bool IsCompleted { get; set; }
 
         public int TaskListId { get; set; } //FK to TaskList
-        public TaskList TaskList {get; set;} = null!;
+        public TaskList TaskList { get; set; } = null!;
+        
+        public int Position { get; set; } // Order of the task within the list
     }
 }

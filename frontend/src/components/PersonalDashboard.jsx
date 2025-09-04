@@ -155,7 +155,7 @@ export default function PersonalDashboard({ onLogout }) {
                   boards.map(board => (
                     <div
                       key={board.id}
-                      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900 text-white font-montserrat text-lg flex justify-between items-center"
+                      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900 text-white font-montserrat text-lg flex justify-between items-center hover:underline"
                     >
                       {editingBoardId === board.id ? (
                         <input
@@ -168,7 +168,7 @@ export default function PersonalDashboard({ onLogout }) {
                             if (e.key === "Escape") cancelBoardEdit();
                           }}
                           autoFocus
-                          className="bg-fuchsia-800 text-white rounded-md focus:outline-none"
+                          className="bg-fuchsia-800 text-white rounded-md focus:outline-none "
                         />
                       ) : (
                         <span
