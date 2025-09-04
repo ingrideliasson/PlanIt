@@ -366,7 +366,7 @@ async function handleDragEnd(result) {
         {board.title}
       </h1>
 
-      <div className="flex-1 px-6 pb-6 overflow-x-auto board-scroll" style={{ minHeight: 1 }}>
+      <div className="flex-1 px-6 pb-6 overflow-x-auto overflow-y-hidden board-scroll" style={{ minHeight: 0, scrollbarWidth: 'thin' }}>
         <div className="flex gap-6 min-w-max items-start">
           {board.taskLists.map(list => (
             <Droppable key={list.id} droppableId={list.id.toString()}>
@@ -527,13 +527,13 @@ async function handleDragEnd(result) {
                         onChange={(e) => setTaskTitle(list.id, e.target.value)}
                         placeholder="Enter title..."
                         autoFocus
-                        className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-orange-500 placeholder:text-amber-700"
+                        className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-amber-900 focus:outline-none placeholder:text-amber-700"
                       />
                       <div className="flex gap-2">
                         <button
                           type="submit"
                           disabled={addTaskLoading[list.id]}
-                          className="px-3 py-1 rounded-lg bg-white text-black text-sm"
+                          className="px-3 py-1 rounded-lg bg-amber-700 text-white text-sm hover:bg-amber-800"
                         >
                           {addTaskLoading[list.id] ? "Adding…" : "Add"}
                         </button>
@@ -552,7 +552,7 @@ async function handleDragEnd(result) {
                   ) : (
                     <button
                       onClick={() => setAddingTaskForListId(list.id)}
-                      className="text-amber-700 hover:text-white text-sm text-left"
+                      className="text-amber-900 hover:text-white text-sm text-left"
                     >
                       <div className="p-2 rounded-lg hover:bg-amber-700">
                       + Add Task
@@ -578,23 +578,23 @@ async function handleDragEnd(result) {
                   type="text"
                   value={newListTitle}
                   onChange={(e) => setNewListTitle(e.target.value)}
-                  placeholder="List title..."
-                  className="bg-transparent text-center w-full border-b border-white/30 pb-2 mb-3 focus:outline-none"
+                  // placeholder="List title..."
+                  className="bg-transparent text-center w-full border-b border-amber-950 pb-2 mb-3 focus:outline-none placeholder:text-amber-700"
                 />
                 <div className="flex gap-2 justify-center">
                   <button
                     type="submit"
                     disabled={addListLoading}
-                    className="px-3 py-1 rounded-lg text-amber-950"
+                    className="px-3 py-1 rounded-lg bg-amber-700 text-white hover:bg-amber-800"
                   >
                     {addListLoading ? "Adding…" : "Add"}
                   </button>
                   <button
                     type="button"
                     onClick={cancelAddList}
-                    className="px-3 py-1 rounded-full bg-purple-600 text-white"
+                    className="py-1 text-amber-950 text-xl"
                   >
-                    Cancel
+                    <RxCross1 />
                   </button>
                 </div>
               </form>
@@ -602,9 +602,9 @@ async function handleDragEnd(result) {
               <div className="text-center">
                 <button
                   onClick={startAddList}
-                  className="text-white/90 hover:text-white"
+                  className="text-amber-900 hover:font-semibold"
                 >
-                  + Add List
+                  + Add new list
                 </button>
               </div>
             )}

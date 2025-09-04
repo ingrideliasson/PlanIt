@@ -25,13 +25,5 @@
 }
 
 .board-scroll::-webkit-scrollbar {
-  height: 12px;
-}
-.board-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #a78bfa #f3f4f6;
-}
-
-.board-scroll {
-  overflow-x: scroll !important;
+  height: 0;
 }

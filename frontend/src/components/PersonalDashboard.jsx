@@ -181,7 +181,7 @@ export default function PersonalDashboard({ onLogout }) {
 
                       <div className="space-x-2">
                         <button
-                          className="text-amber-500 text-xl hover:text-amber-400"
+                          className="text-amber-500 text-xl hover:text-amber-600"
                           onClick={(e) => {
                             e.stopPropagation();
                             startBoardEdit(board);
@@ -190,7 +190,7 @@ export default function PersonalDashboard({ onLogout }) {
                           < CiEdit />
                         </button>
                         <button
-                          className="text-amber-600 text-xl hover:text-amber-500"
+                          className="text-amber-600 text-xl hover:text-amber-700"
                           onClick={(e) => {
                             e.stopPropagation();
                             const rect = e.currentTarget.getBoundingClientRect();
@@ -223,15 +223,15 @@ export default function PersonalDashboard({ onLogout }) {
                       type="text"
                       value={newBoardTitle}
                       onChange={(e) => setNewBoardTitle(e.target.value)}
-                      placeholder="Board title..."
-                      className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-white placeholder:text-pink-200"
+                      placeholder="Enter title"
+                      className="w-full rounded-xl mb-4 px-3 py-6 text-md mb-2 bg-transparent opacity-70 text-white placeholder:text-gray-300 pl-4 font-montserrat focus:outline-none focus:bg-fuchsia-900"
                       autoFocus
                     />
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 pl-2">
                       <button
                         type="submit"
                         disabled={addBoardLoading}
-                        className="px-3 py-1 rounded-lg bg-white text-black text-sm"
+                        className="px-3 py-1 rounded-lg bg-amber-600 text-white hover:bg-amber-700 text-sm"
                       >
                         {addBoardLoading ? "Adding…" : "Add"}
                       </button>
