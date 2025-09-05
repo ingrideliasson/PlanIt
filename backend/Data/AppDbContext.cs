@@ -11,32 +11,28 @@ namespace backend.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
+
+        public DbSet<Board> Boards { get; set; }
         public DbSet<UserBoard> UserBoards { get; set; }
         public DbSet<TaskList> TaskLists { get; set; }
         public DbSet<TaskItem> TaskItems { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder); // Identity setup
+            base.OnModelCreating(modelBuilder);
 
-            //Relations
-            builder.Entity<UserBoard>()
-            .HasOne(b => b.User)
-            .WithMany()
-            .HasForeignKey(b => b.UserId)
-            .IsRequired();
+            modelBuilder.Entity<UserBoard>()
+                .HasKey(ub => new { ub.ApplicationUserId, ub.BoardId });
 
-            builder.Entity<TaskList>()
-            .HasOne(l => l.UserBoard)
-            .WithMany(b => b.TaskLists)
-            .HasForeignKey(l => l.UserBoardId)
-            .IsRequired();
+            modelBuilder.Entity<UserBoard>()
+                .HasOne(ub => ub.ApplicationUser)
+                .WithMany(u => u.UserBoards)
+                .HasForeignKey(ub => ub.ApplicationUserId);
 
-            builder.Entity<TaskItem>()
-            .HasOne(t => t.TaskList)
-            .WithMany(l => l.TaskItems)
-            .HasForeignKey(t => t.TaskListId)
-            .IsRequired();
+            modelBuilder.Entity<UserBoard>()
+                .HasOne(ub => ub.Board)
+                .WithMany(b => b.UserBoards)
+                .HasForeignKey(ub => ub.BoardId);
         }
-    }
+            }
 }

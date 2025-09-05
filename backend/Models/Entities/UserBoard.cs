@@ -1,16 +1,13 @@
-using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-
 namespace backend.Models
 {
     public class UserBoard
-{
-    public int Id { get; set; }
-    public string Title { get; set; } = "";
+    {
+        public string ApplicationUserId { get; set; } = null!;
+        public ApplicationUser ApplicationUser { get; set; } = null!;
 
-    public string? UserId { get; set; } //FK to IdentityUser
-    public ApplicationUser User { get; set; } = null!;
+        public int BoardId { get; set; }
+        public Board Board { get; set; } = null!;
 
-    public ICollection<TaskList> TaskLists { get; set; } = new List<TaskList>();
-}
+        public string Role { get; set; } = "Member"; // Default role
+    }
 }
