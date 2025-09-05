@@ -7,8 +7,6 @@ import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
 
-
-
 export default function PersonalDashboard({ onLogout }) {
   const user = useCurrentUser();
   const navigate = useNavigate();
@@ -45,7 +43,7 @@ export default function PersonalDashboard({ onLogout }) {
       try {
         const token = localStorage.getItem("token");
         setAuthToken(token);
-        const response = await api.get("/userboards/mine");
+        const response = await api.get("/boards");
         setBoards(response.data);
       } catch (error) {
         console.error("Error fetching boards:", error);
@@ -65,7 +63,7 @@ export default function PersonalDashboard({ onLogout }) {
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-      const response = await api.post("/userboards", { Title: title });
+      const response = await api.post("/boards", { title });
       setBoards(prev => [...prev, response.data]);
       setNewBoardTitle("");
       setAddingBoard(false);
@@ -94,7 +92,7 @@ export default function PersonalDashboard({ onLogout }) {
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-      await api.put(`/userboards/${boardId}`, { Title: title });
+      await api.put(`/boards/${boardId}`, { title });
       setBoards(prev =>
         prev.map(b => (b.id === boardId ? { ...b, title } : b))
       );
@@ -111,7 +109,7 @@ export default function PersonalDashboard({ onLogout }) {
     try {
       const token = localStorage.getItem("token");
       setAuthToken(token);
-      await api.delete(`/userboards/${boardId}`);
+      await api.delete(`/boards/${boardId}`);
       setBoards(prev => prev.filter(b => b.id !== boardId));
     } catch (error) {
       console.error("Error deleting board:", error);
@@ -301,5 +299,6 @@ export default function PersonalDashboard({ onLogout }) {
     </div>
   );
 }
+
 
 

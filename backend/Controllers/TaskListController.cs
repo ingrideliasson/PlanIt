@@ -42,7 +42,7 @@ namespace backend.Controllers
             var list = new TaskList
             {
                 Title = dto.Title,
-                UserBoardId = dto.UserBoardId
+                BoardId = dto.BoardId
             };
 
             _context.TaskLists.Add(list);
@@ -52,14 +52,16 @@ namespace backend.Controllers
             {
                 Id = list.Id,
                 Title = list.Title!,
-                UserBoardId = list.UserBoardId
+                BoardId = list.BoardId
             };
 
-            return CreatedAtAction(
-                "GetNested",
-                "UserBoard",
-                new { id = list.UserBoardId },
-                result);
+            return Ok(result);
+
+            // return CreatedAtAction(
+            //     "GetNested",
+            //     "UserBoard",
+            //     new { id = list.BoardId },
+            //     result);
         }
 
         // PUT

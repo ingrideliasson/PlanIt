@@ -21,18 +21,40 @@ namespace backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // --- UserBoard ---
             modelBuilder.Entity<UserBoard>()
-                .HasKey(ub => new { ub.ApplicationUserId, ub.BoardId });
+                .HasKey(ub => ub.Id); // primary key is Id now
+
+            // enforce uniqueness of (ApplicationUserId, BoardId)
+            modelBuilder.Entity<UserBoard>()
+                .HasIndex(ub => new { ub.ApplicationUserId, ub.BoardId })
+                .IsUnique();
 
             modelBuilder.Entity<UserBoard>()
                 .HasOne(ub => ub.ApplicationUser)
                 .WithMany(u => u.UserBoards)
-                .HasForeignKey(ub => ub.ApplicationUserId);
+                .HasForeignKey(ub => ub.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserBoard>()
                 .HasOne(ub => ub.Board)
                 .WithMany(b => b.UserBoards)
-                .HasForeignKey(ub => ub.BoardId);
+                .HasForeignKey(ub => ub.BoardId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- TaskList ---
+            modelBuilder.Entity<TaskList>()
+                .HasOne(tl => tl.Board)
+                .WithMany(b => b.TaskLists)
+                .HasForeignKey(tl => tl.BoardId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- TaskItem ---
+            modelBuilder.Entity<TaskItem>()
+                .HasOne(ti => ti.TaskList)
+                .WithMany(tl => tl.TaskItems)
+                .HasForeignKey(ti => ti.TaskListId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
             }
 }

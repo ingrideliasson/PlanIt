@@ -4,13 +4,13 @@ namespace backend.Models.Dto
     {
         public int Id { get; set; }
         public string Title { get; set; } = "";
-        public int UserBoardId { get; set; }
+        public int BoardId { get; set; }
     }
 
     public class TaskListCreateDto
     {
         public string Title { get; set; } = "";
-        public int UserBoardId { get; set; }
+        public int BoardId { get; set; }
     }
 
     public class TaskListUpdateDto

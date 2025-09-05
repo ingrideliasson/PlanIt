@@ -2,6 +2,8 @@ namespace backend.Models
 {
     public class UserBoard
     {
+        public int Id { get; set; }
+        
         public string ApplicationUserId { get; set; } = null!;
         public ApplicationUser ApplicationUser { get; set; } = null!;
 
