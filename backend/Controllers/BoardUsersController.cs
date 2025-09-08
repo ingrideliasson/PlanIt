@@ -48,7 +48,7 @@ namespace backend.Controllers
             if (string.IsNullOrWhiteSpace(username)) return BadRequest("Username is required");
 
             var users = await _context.Users
-                .Where(u => u.UserName.Contains(username))
+                .Where(u => EF.Functions.Like(u.UserName, $"%{username}%"))
                 .Select(u => new
                 {
                     u.Id,

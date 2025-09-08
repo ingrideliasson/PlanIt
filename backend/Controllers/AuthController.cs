@@ -82,6 +82,8 @@ namespace backend.Controllers
             return Ok(dto);
         }
 
+
+
         // Helper: JWT generation
         private string GenerateJwtToken(ApplicationUser user)
         {

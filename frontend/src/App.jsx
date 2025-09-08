@@ -1,25 +1,52 @@
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import PersonalDashboard from "./components/PersonalDashboard";
+import { jwtDecode } from "jwt-decode";
+import api, { setAuthToken } from "./services/api";
+
 import AuthPage from "./components/AuthPage";
+import PersonalDashboard from "./components/PersonalDashboard";
 import BoardView from "./components/BoardView";
-import { setAuthToken } from "./services/api";
 
 function ProtectedRoute({ token, children }) {
   return token ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
-  const [token, setToken] = useState(localStorage.getItem("jwt") || null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    if (token) setAuthToken(token);
+    if (token) {
+      setAuthToken(token); // attach to axios
+      try {
+        const decoded = jwtDecode(token);
+        setCurrentUser(decoded);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setAuthToken(null);
+        setCurrentUser(null);
+        setToken(null);
+        localStorage.removeItem("token");
+      }
+    }
   }, [token]);
 
-  const handleLogin = (jwt) => setToken(jwt);
+  const handleLogin = (jwt) => {
+    localStorage.setItem("token", jwt);
+    setToken(jwt);
+    try {
+      setCurrentUser(jwtDecode(jwt));
+    } catch (err) {
+      console.error("Invalid login token:", err);
+      setCurrentUser(null);
+    }
+  };
+
   const handleLogout = () => {
     setToken(null);
-    localStorage.removeItem("jwt");
+    setCurrentUser(null);
+    localStorage.removeItem("token");
+    setAuthToken(null);
   };
 
   return (
@@ -31,7 +58,7 @@ export default function App() {
           path="/dashboard"
           element={
             <ProtectedRoute token={token}>
-              <PersonalDashboard onLogout={handleLogout} />
+              <PersonalDashboard currentUser={currentUser} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
@@ -39,7 +66,7 @@ export default function App() {
           path="/boards/:id"
           element={
             <ProtectedRoute token={token}>
-              <BoardView />
+              <BoardView currentUser={currentUser} onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />

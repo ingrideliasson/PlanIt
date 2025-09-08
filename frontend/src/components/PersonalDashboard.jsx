@@ -119,7 +119,9 @@ export default function PersonalDashboard({ onLogout }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-800 via-pink-800 to-yellow-400 relative">
-      <Header onLogout={onLogout} />
+      <Header 
+      onLogout={onLogout}
+      currentUser={user} />
 
       <main className="flex-1 flex items-center py-8 sm:py-10 lg:py-14">
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

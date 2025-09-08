@@ -1,20 +1,19 @@
 import axios from "axios";
 
-// Base URL for backend
-
-const API_BASE_URL = "http://localhost:5140/api";
-
 const api = axios.create({
-    baseURL: API_BASE_URL,
+  baseURL: "http://localhost:5140/api", // BASE URL for backend
 });
 
-// Attach token to requests
+// Helper to set/unset the token in headers
 export const setAuthToken = (token) => {
-    if (token) {
-        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-        delete api.defaults.headers.common["Authorization"];
-    }
+  if (token) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    localStorage.setItem("token", token); // persist across refresh
+  } else {
+    delete api.defaults.headers.common["Authorization"];
+    localStorage.removeItem("token");
+  }
 };
 
 export default api;
+

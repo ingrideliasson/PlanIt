@@ -56,6 +56,10 @@ namespace backend.Controllers
                         .Where(ub => ub.ApplicationUserId == user.Id)
                         .Select(ub => ub.Id)
                         .FirstOrDefault(),
+                    OwnerId = b.UserBoards
+                        .Where(ub => ub.Role == "Owner")
+                        .Select(ub => ub.ApplicationUserId)
+                        .FirstOrDefault(),
                     TaskLists = b.TaskLists
                         .Select(l => new 
                         {

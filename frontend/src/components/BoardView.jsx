@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import api, { setAuthToken } from "../services/api";
-import Header from "./Header";
-import { MdDeleteOutline } from "react-icons/md";
-import { RxCross1 } from "react-icons/rx";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import api from "../services/api";
+import Header from "./Header";
+import MemberAvatars from "./MemberAvatars";
+import AddMembersModal from "./AddMembersModal";
+import { RxCross1 } from "react-icons/rx";
+import { MdDeleteOutline } from "react-icons/md";
+import UserSettingsModal from "./UserSettingsModal";
 
-export default function BoardView({ onLogout }) {
+
+export default function BoardView({ onLogout, currentUser }) {
   const { id } = useParams();
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,15 +31,18 @@ export default function BoardView({ onLogout }) {
 
   const [confirmingDelete, setConfirmingDelete] = useState(null);
 
+  const [showAddMembers, setShowAddMembers] = useState(false);
+  const [members, setMembers] = useState([]);
+
+  const [showUserSettings, setShowUserSettings] = useState(false);
+
+
   // --- Fetch board ---
   async function fetchBoard() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      setAuthToken(token);
       const res = await api.get(`/boards/${id}/details`);
-      const boardData = res.data;
-      setBoard(boardData);
+      setBoard(res.data);
     } catch (err) {
       console.error("Failed to load board:", err);
       setBoard(null);
@@ -46,6 +53,20 @@ export default function BoardView({ onLogout }) {
 
   useEffect(() => {
     if (id) fetchBoard();
+  }, [id]);
+
+  // --- Fetch board members ---
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await api.get(`/boards/${id}/users`);
+        // Ensure applicationUserId is always a string
+        setMembers(res.data.map(m => ({ ...m, applicationUserId: String(m.applicationUserId) })));
+      } catch (err) {
+        console.error("Failed to fetch board members:", err);
+      }
+    };
+    if (id) fetchMembers();
   }, [id]);
 
   // --- List actions ---
@@ -66,9 +87,7 @@ export default function BoardView({ onLogout }) {
       await api.put(`/tasklists/${listId}`, { title });
       setBoard(prev => ({
         ...prev,
-        taskLists: prev.taskLists.map(l =>
-          l.id === listId ? { ...l, title } : l
-        )
+        taskLists: prev.taskLists.map(l => (l.id === listId ? { ...l, title } : l))
       }));
     } catch (err) {
       console.error("Failed to update list title:", err);
@@ -128,9 +147,7 @@ export default function BoardView({ onLogout }) {
           list.id === listId
             ? {
                 ...list,
-                taskItems: list.taskItems.map(t =>
-                  t.id === taskId ? { ...t, title: editedTitle } : t
-                )
+                taskItems: list.taskItems.map(t => (t.id === taskId ? { ...t, title: editedTitle } : t))
               }
             : list
         )
@@ -158,9 +175,7 @@ export default function BoardView({ onLogout }) {
       setBoard(prev => ({
         ...prev,
         taskLists: prev.taskLists.map(list =>
-          list.id === listId
-            ? { ...list, taskItems: [...list.taskItems, res.data] }
-            : list
+          list.id === listId ? { ...list, taskItems: [...list.taskItems, res.data] } : list
         )
       }));
     } catch (err) {
@@ -176,9 +191,7 @@ export default function BoardView({ onLogout }) {
       setBoard(prev => ({
         ...prev,
         taskLists: prev.taskLists.map(l =>
-          l.id === list.id
-            ? { ...l, taskItems: l.taskItems.filter(t => t.id !== task.id) }
-            : l
+          l.id === list.id ? { ...l, taskItems: l.taskItems.filter(t => t.id !== task.id) } : l
         )
       }));
     } catch (err) {
@@ -200,9 +213,7 @@ export default function BoardView({ onLogout }) {
           l.id === listId
             ? {
                 ...l,
-                taskItems: l.taskItems.map(t =>
-                  t.id === task.id ? { ...t, isCompleted: !t.isCompleted } : t
-                )
+                taskItems: l.taskItems.map(t => (t.id === task.id ? { ...t, isCompleted: !t.isCompleted } : t))
               }
             : l
         )
@@ -230,8 +241,8 @@ export default function BoardView({ onLogout }) {
     // Optimistic update
     setBoard(prev => {
       const listsCopy = prev.taskLists.map(list => ({ ...list, taskItems: [...list.taskItems] }));
-      const sourceList = listsCopy.find(l => l.id.toString() === sourceListId);
-      const destList = listsCopy.find(l => l.id.toString() === destListId);
+      const sourceList = listsCopy.find(l => String(l.id) === sourceListId);
+      const destList = listsCopy.find(l => String(l.id) === destListId);
       const [movedTask] = sourceList.taskItems.splice(sourceIndex, 1);
       destList.taskItems.splice(destIndex, 0, movedTask);
       sourceList.taskItems.forEach((t, i) => (t.position = i));
@@ -250,15 +261,77 @@ export default function BoardView({ onLogout }) {
     }
   }
 
+  const handleSaveSettings = async (prefs) => {
+  try {
+    // persist to backend
+    await api.put(`/users/${currentUser.id}/preferences`, prefs);
+
+    // optionally, refresh current user info from backend
+    const res = await api.get(`/users/${currentUser.id}`);
+    // update any local state/UI if needed
+    setShowUserSettings(false);
+  } catch (err) {
+    console.error("Failed to save settings:", err);
+    alert("Could not save user settings.");
+  }
+};
+
   if (loading) return <div className="p-6">Loading...</div>;
   if (!board) return <div className="p-6">Board not found</div>;
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-800 via-pink-800 to-yellow-400 font-montserrat relative">
-        <Header onLogout={onLogout} />
+        
+        <Header 
+        onLogout={onLogout}
+        currentUser={currentUser}
+        onOpenSettings={() => setShowUserSettings(true)}
+        />
+
+        {showUserSettings && (
+          <UserSettingsModal
+            user={currentUser}
+            onClose={() => setShowUserSettings(false)}
+            onSave={handleSaveSettings}
+          />
+        )}
+
+
         <div className="flex flex-col flex-1 min-h-0">
-          <h1 className="text-white text-2xl font-montserrat pl-8 py-8 px-6">{board.title}</h1>
+          
+          <h1 className="text-white text-3xl font-montserrat pl-8 px-6 mb-4">{board.title}</h1>
+          
+          <div className="flex items-center ml-6 mb-4">
+            <MemberAvatars members={members} 
+            className="mr-4"/>
+
+
+          {board && currentUser && board.ownerId === currentUser.sub && (
+            <button
+              className="px-3 py-1 text-amber-600 hover:underline text-left text-sm"
+              onClick={() => setShowAddMembers(true)}
+            >
+              Handle members
+            </button>
+          )}
+          </div>
+        
+        {showAddMembers && (
+        <AddMembersModal
+          boardId={board.id}
+          existingMembers={members}
+          currentUserId={currentUser.sub}
+          onClose={() => setShowAddMembers(false)}
+          onMemberAdded={(user) => {
+            if (user.removed) {
+              setMembers((prev) => prev.filter(m => m.applicationUserId !== user.applicationUserId));
+            } else {
+              setMembers(prev => [...prev, { ...user, applicationUserId: user.applicationUserId }]);
+            }
+          }}
+        />
+      )}
 
           <div className="flex-1 px-6 pb-6 overflow-x-auto overflow-y-hidden board-scroll" style={{ minHeight: 0, scrollbarWidth: 'thin' }}>
             <div className="flex gap-6 min-w-max items-start">
