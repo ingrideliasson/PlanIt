@@ -9,7 +9,6 @@ import { RxCross1 } from "react-icons/rx";
 import { MdDeleteOutline } from "react-icons/md";
 import AssignModal from "./AssignModal";
 import { IoPersonAddSharp } from "react-icons/io5";
-import { getColorForUser } from "../utils/avatarUtils";
 
 
 export default function BoardView({ onLogout, currentUser }) {
@@ -39,12 +38,6 @@ export default function BoardView({ onLogout, currentUser }) {
   const [assigningTask, setAssigningTask] = useState(null);   
 
   const listColors = ["#3B82F6", "#10B981", "#F472B6", "#FACC15", "#F60015"]; // Blue, Green, Pink, Yellow
-
-
-
-  // const [showUserSettings, setShowUserSettings] = useState(false);
-
-
 
   // --- Fetch board ---
   async function fetchBoard() {
@@ -270,12 +263,6 @@ const handleAssignUser = async (taskId, userId) => {
   const member = members.find(m => m.applicationUserId === String(userId));
   if (!member) return alert("User not found");
 
-  // Ensure deterministic avatar color
-  const memberWithColor = {
-    ...member,
-    avatarColor: member.avatarColor || getColorForUser(member.applicationUserId)
-  };
-
   // Optimistic update: add the user to the task
   setBoard(prev => ({
     ...prev,
@@ -283,16 +270,18 @@ const handleAssignUser = async (taskId, userId) => {
       ...list,
       taskItems: list.taskItems.map(task => {
         if (task.id !== taskId) return task;
+
         // Prevent duplicates
-        if (task.assignedUsers?.some(u => u.applicationUserId === memberWithColor.applicationUserId)) return task;
-        return { ...task, assignedUsers: [...(task.assignedUsers || []), memberWithColor] };
+        if (task.assignedUsers?.some(u => u.applicationUserId === member.applicationUserId)) return task;
+
+        return { ...task, assignedUsers: [...(task.assignedUsers || []), member] };
       })
     }))
   }));
 
   try {
     // Persist on backend
-    await api.post(`/taskitems/${taskId}/assignments`, { ApplicationUserId: memberWithColor.applicationUserId });
+    await api.post(`/taskitems/${taskId}/assignments`, { ApplicationUserId: member.applicationUserId });
   } catch (err) {
     console.error(err);
     // Rollback on failure
@@ -304,7 +293,7 @@ const handleAssignUser = async (taskId, userId) => {
           if (task.id !== taskId) return task;
           return {
             ...task,
-            assignedUsers: task.assignedUsers.filter(u => u.applicationUserId !== memberWithColor.applicationUserId)
+            assignedUsers: task.assignedUsers.filter(u => u.applicationUserId !== member.applicationUserId)
           };
         })
       }))
@@ -313,13 +302,6 @@ const handleAssignUser = async (taskId, userId) => {
   }
 };
 
-// Generate a color immediately
-function assignAvatarColor(member, allMembers) {
-  const defaultColors = ["#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EF4444", "#F472B6"];
-  const usedColors = allMembers.map(m => m.avatarColor).filter(Boolean);
-  const availableColors = defaultColors.filter(c => !usedColors.includes(c));
-  return availableColors[0] || defaultColors[0];
-}
 
   const handleUnassignUser = async (taskId, userId) => {
     const normalizedId = String(userId);
@@ -415,9 +397,7 @@ function assignAvatarColor(member, allMembers) {
         
         <div className="flex items-center ml-6 mb-4">
           <MemberAvatars
-            members={members}
-            allMembers={members}       // full list defines the palette order
-            ownerId={board.ownerId}
+            members={board.members}
             size={32}
             showBorder={true}
             className="mr-4"
@@ -576,8 +556,6 @@ function assignAvatarColor(member, allMembers) {
                                   <div className="flex flex-wrap mt-4 w-[95%]">
                                     <MemberAvatars
                                       members={task.assignedUsers}
-                                      allMembers={members}   // <- IMPORTANT: full board members for palette/order
-                                      ownerId={board.ownerId}
                                       size={24}
                                       showBorder={false}
                                     />

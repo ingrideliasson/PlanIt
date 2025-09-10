@@ -5,6 +5,7 @@ namespace backend.Models.Dto
         public int Id { get; set; }
         public string Title { get; set; } = "";
         public string UserId { get; set; } = "";
+        public int ColorIndex { get; set; }
     }
 
     public class UserBoardCreateDto
@@ -22,6 +23,7 @@ namespace backend.Models.Dto
         public int Id { get; set; }
         public string Title { get; set; } = "";
         public List<TaskListNestedDto> TaskLists { get; set; } = new();
+        public int ColorIndex { get; set; }
     }
     
 }

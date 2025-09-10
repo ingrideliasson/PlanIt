@@ -35,7 +35,8 @@ namespace backend.Controllers
                 ub.ApplicationUser.UserName,
                 ub.ApplicationUser.FirstName,
                 ub.ApplicationUser.LastName,
-                ub.Role
+                ub.Role,
+                ub.ColorIndex
             });
 
             return Ok(users);
@@ -76,11 +77,16 @@ namespace backend.Controllers
             if (board.UserBoards.Any(ub => ub.ApplicationUserId == dto.UserId))
                 return BadRequest("User already added to board");
 
+            // Determine next color index
+            int defaultColorCount = 10;
+            int nextColorIndex = board.UserBoards.Count % defaultColorCount;
+
             var userBoard = new UserBoard
             {
                 ApplicationUserId = dto.UserId,
                 BoardId = boardId,
-                Role = string.IsNullOrWhiteSpace(dto.Role) ? "Member" : dto.Role
+                Role = string.IsNullOrWhiteSpace(dto.Role) ? "Member" : dto.Role,
+                ColorIndex = nextColorIndex // assign color index here
             };
 
             _context.UserBoards.Add(userBoard);
@@ -92,9 +98,11 @@ namespace backend.Controllers
                 user.UserName,
                 user.FirstName,
                 user.LastName,
-                userBoard.Role
+                userBoard.Role,
+                userBoard.ColorIndex // include color index in response
             });
         }
+
 
         // PUT: api/boards/{boardId}/users/{userId}
         [HttpPut("{userId}")]
