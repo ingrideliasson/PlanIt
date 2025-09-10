@@ -65,6 +65,7 @@ namespace backend.Controllers
                         {
                             l.Id,
                             l.Title,
+                            l.ColorIndex, // Include color index
                             TaskItems = l.TaskItems
                                 .OrderBy(t => t.Position)
                                 .Select(t => new 

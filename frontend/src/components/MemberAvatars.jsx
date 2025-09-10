@@ -20,7 +20,7 @@ export default function MemberAvatars({
   const gapStyle = { gap: Math.max(4, Math.round(size * 0.08)) };
 
   return (
-    <div className={`flex items-center ${className}`} style={gapStyle}>
+    <div className={`flex flex-wrap items-center ${className}`} style={gapStyle}>
       {members.map((m) => {
         const uid = String(m.applicationUserId ?? m.id ?? "");
         const initials = `${m.firstName?.[0] ?? ""}${m.lastName?.[0] ?? ""}`.toUpperCase();

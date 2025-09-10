@@ -21,10 +21,20 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TaskListCreateDto dto)
         {
+            // Get existing lists for this board to determine color index
+            var existingLists = await _context.TaskLists
+                .Where(l => l.BoardId == dto.BoardId)
+                .ToListAsync();
+
+            // Define your default color count (matches frontend)
+            int defaultColorCount = 5; // e.g., Blue, Green, Pink, Yellow
+            int colorIndex = existingLists.Count % defaultColorCount;
+
             var list = new TaskList
             {
                 Title = dto.Title,
-                BoardId = dto.BoardId
+                BoardId = dto.BoardId,
+                ColorIndex = colorIndex
             };
 
             _context.TaskLists.Add(list);
@@ -34,11 +44,11 @@ namespace backend.Controllers
             {
                 Id = list.Id,
                 Title = list.Title!,
-                BoardId = list.BoardId
+                BoardId = list.BoardId,
+                ColorIndex = list.ColorIndex // Return color index
             };
 
             return Ok(result);
-
         }
 
         // PUT

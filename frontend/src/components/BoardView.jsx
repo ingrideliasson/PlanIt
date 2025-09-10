@@ -10,8 +10,6 @@ import { MdDeleteOutline } from "react-icons/md";
 import AssignModal from "./AssignModal";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { getColorForUser } from "../utils/avatarUtils";
-import { getListColor } from "../utils/listColors";
-
 
 
 export default function BoardView({ onLogout, currentUser }) {
@@ -39,6 +37,9 @@ export default function BoardView({ onLogout, currentUser }) {
   const [members, setMembers] = useState([]);
 
   const [assigningTask, setAssigningTask] = useState(null);   
+
+  const listColors = ["#3B82F6", "#10B981", "#F472B6", "#FACC15", "#F60015"]; // Blue, Green, Pink, Yellow
+
 
 
   // const [showUserSettings, setShowUserSettings] = useState(false);
@@ -112,12 +113,27 @@ export default function BoardView({ onLogout, currentUser }) {
     e.preventDefault();
     const title = (newListTitle || "").trim();
     if (!title) return;
+
     setAddListLoading(true);
     try {
-      await api.post("/tasklists", { title, boardId: board.id });
+      const res = await api.post("/tasklists", { title, boardId: board.id });
+
+      // Optimistic update: add new list to state
+      setBoard(prev => ({
+        ...prev,
+        taskLists: [
+          ...prev.taskLists,
+          {
+            id: res.data.id,
+            title: res.data.title,
+            taskItems: [],
+            colorIndex: res.data.colorIndex
+          }
+        ]
+      }));
+
       setNewListTitle("");
       setAddingList(false);
-      await fetchBoard();
     } catch (err) {
       console.error("Failed to add list:", err);
     } finally {
@@ -441,7 +457,7 @@ function assignAvatarColor(member, allMembers) {
                   <div ref={provided.innerRef} 
                   {...provided.droppableProps} 
                   className="bg-orange-400 rounded-2xl p-4 flex-shrink-0 w-64 flex flex-col relative"
-                  style={{backgroundColor: getListColor(list.id)}}
+                  style={{backgroundColor: listColors[list.colorIndex % listColors.length]}}
                   >
                     <div className="flex items-center justify-between mb-3">
                       {editingListId === list.id ? (
