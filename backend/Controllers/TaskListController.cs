@@ -17,24 +17,6 @@ namespace backend.Controllers
             _context = context;
         }
 
-        // // GET lists by board ID, currently not needed
-        // [HttpGet("~/api/userboards/{boardId}/tasklists")]
-        // public async Task<IActionResult> GetByBoard(int boardId)
-        // {
-        //     var lists = await _context.TaskLists
-        //         .Where(l => l.UserBoardId == boardId)
-        //         .ToListAsync();
-
-        //     var result = lists.Select(l => new TaskListDto
-        //     {
-        //         Id = l.Id,
-        //         Title = l.Title!,
-        //         UserBoardId = l.UserBoardId
-        //     });
-
-        //     return Ok(result);
-        // }
-
         // POST
         [HttpPost]
         public async Task<IActionResult> Create(TaskListCreateDto dto)
@@ -57,11 +39,6 @@ namespace backend.Controllers
 
             return Ok(result);
 
-            // return CreatedAtAction(
-            //     "GetNested",
-            //     "UserBoard",
-            //     new { id = list.BoardId },
-            //     result);
         }
 
         // PUT

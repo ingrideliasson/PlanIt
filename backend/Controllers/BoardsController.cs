@@ -73,7 +73,15 @@ namespace backend.Controllers
                                     t.Title,
                                     t.Description,
                                     t.IsCompleted,
-                                    t.Position
+                                    t.Position,
+                                    AssignedUsers = t.TaskAssignments
+                                        .Select(a => new 
+                                        {
+                                            a.ApplicationUserId,
+                                            a.ApplicationUser.FirstName,
+                                            a.ApplicationUser.LastName,
+                                        })
+                                        .ToList()
                                 })
                                 .ToList()
                         })
@@ -85,7 +93,6 @@ namespace backend.Controllers
 
             return Ok(board);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> CreateBoard([FromBody] BoardCreateDto dto)

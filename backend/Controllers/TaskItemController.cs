@@ -137,5 +137,74 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        // GET: /api/taskitems/{taskId}/assignments
+        [HttpGet("{taskId}/assignments")]
+        public async Task<IActionResult> GetAssignments(int taskId)
+        {
+            var task = await _context.TaskItems
+                .Include(t => t.TaskAssignments)
+                    .ThenInclude(ta => ta.ApplicationUser)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null) return NotFound("Task not found");
+
+            var assignedUsers = task.TaskAssignments.Select(ta => new TaskAssignmentUserDto
+            {
+                ApplicationUserId = ta.ApplicationUserId,
+                FirstName = ta.ApplicationUser.FirstName ?? "",
+                LastName = ta.ApplicationUser.LastName ?? ""
+            });
+
+            return Ok(assignedUsers);
+        }
+
+        // POST: /api/taskitems/{taskId}/assignments
+        [HttpPost("{taskId}/assignments")]
+        public async Task<IActionResult> AssignUser(int taskId, TaskAssignmentCreateDto dto)
+        {
+            var task = await _context.TaskItems.FindAsync(taskId);
+            if (task == null) return NotFound("Task not found");
+
+            // Check if user is already assigned
+            if (await _context.TaskAssignments.AnyAsync(ta => ta.TaskItemId == taskId && ta.ApplicationUserId == dto.ApplicationUserId))
+                return BadRequest("User already assigned to this task");
+
+            // Optional: verify user is member of the board
+            var taskList = await _context.TaskLists.Include(tl => tl.Board)
+                                    .ThenInclude(b => b.UserBoards)
+                                    .FirstOrDefaultAsync(tl => tl.Id == task.TaskListId);
+
+            if (taskList == null) return BadRequest("TaskList not found");
+
+            var isBoardMember = taskList.Board.UserBoards.Any(ub => ub.ApplicationUserId == dto.ApplicationUserId);
+            if (!isBoardMember) return BadRequest("User is not a member of this board");
+
+            var assignment = new TaskAssignment
+            {
+                TaskItemId = taskId,
+                ApplicationUserId = dto.ApplicationUserId
+            };
+
+            _context.TaskAssignments.Add(assignment);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { dto.ApplicationUserId });
+        }
+
+        // DELETE: /api/taskitems/{taskId}/assignments/{userId}
+        [HttpDelete("{taskId}/assignments/{userId}")]
+        public async Task<IActionResult> RemoveAssignment(int taskId, string userId)
+        {
+            var assignment = await _context.TaskAssignments
+                .FirstOrDefaultAsync(ta => ta.TaskItemId == taskId && ta.ApplicationUserId == userId);
+
+            if (assignment == null) return NotFound("Assignment not found");
+
+            _context.TaskAssignments.Remove(assignment);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

@@ -9,7 +9,9 @@ namespace backend.Models
 
         public int TaskListId { get; set; } //FK to TaskList
         public TaskList TaskList { get; set; } = null!;
-        
+
         public int Position { get; set; } // Order of the task within the list
+        
+        public ICollection<TaskAssignment> TaskAssignments { get; set; } = new List<TaskAssignment>();
     }
 }

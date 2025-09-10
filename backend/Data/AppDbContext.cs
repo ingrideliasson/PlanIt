@@ -2,7 +2,6 @@ using backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace backend.Data
 {
@@ -11,11 +10,11 @@ namespace backend.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-
         public DbSet<Board> Boards { get; set; }
         public DbSet<UserBoard> UserBoards { get; set; }
         public DbSet<TaskList> TaskLists { get; set; }
         public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<TaskAssignment> TaskAssignments { get; set; } // ✅ new entity
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,9 +22,8 @@ namespace backend.Data
 
             // --- UserBoard ---
             modelBuilder.Entity<UserBoard>()
-                .HasKey(ub => ub.Id); // primary key is Id now
+                .HasKey(ub => ub.Id);
 
-            // enforce uniqueness of (ApplicationUserId, BoardId)
             modelBuilder.Entity<UserBoard>()
                 .HasIndex(ub => new { ub.ApplicationUserId, ub.BoardId })
                 .IsUnique();
@@ -55,6 +53,22 @@ namespace backend.Data
                 .WithMany(tl => tl.TaskItems)
                 .HasForeignKey(ti => ti.TaskListId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // --- TaskAssignment ---
+            modelBuilder.Entity<TaskAssignment>()
+                .HasKey(ta => new { ta.TaskItemId, ta.ApplicationUserId }); 
+
+            modelBuilder.Entity<TaskAssignment>()
+                .HasOne(ta => ta.TaskItem)
+                .WithMany(ti => ti.TaskAssignments) 
+                .HasForeignKey(ta => ta.TaskItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TaskAssignment>()
+                .HasOne(ta => ta.ApplicationUser)
+                .WithMany(u => u.TaskAssignments) 
+                .HasForeignKey(ta => ta.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
-            }
+    }
 }
