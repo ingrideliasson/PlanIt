@@ -60,7 +60,8 @@ export default function AddMembersModal({
           userName: res.data.userName,
           firstName: res.data.firstName,
           lastName: res.data.lastName,
-          role: res.data.role || "Member"
+          role: res.data.role || "Member",
+          colorIndex: res.data.colorIndex?? 0
         };
         onMemberAdded(addedMember);
       }

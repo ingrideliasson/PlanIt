@@ -132,6 +132,52 @@ namespace backend.Controllers
 
             return Ok(new BoardDto { Id = board.Id, Title = board.Title, UserBoardId = userBoard.Id });
         }
+
+         // ✅ UPDATE title
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBoard(int id, [FromBody] BoardCreateDto dto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var board = await _context.Boards
+                .Include(b => b.UserBoards)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (board == null) return NotFound();
+
+            // Only the owner can rename
+            var isOwner = board.UserBoards.Any(ub => ub.ApplicationUserId == user.Id && ub.Role == "Owner");
+            if (!isOwner) return Forbid();
+
+            board.Title = dto.Title;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // ✅ DELETE board
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBoard(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var board = await _context.Boards
+                .Include(b => b.UserBoards)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (board == null) return NotFound();
+
+            // Only the owner can delete
+            var isOwner = board.UserBoards.Any(ub => ub.ApplicationUserId == user.Id && ub.Role == "Owner");
+            if (!isOwner) return Forbid();
+
+            _context.Boards.Remove(board);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 
     public class BoardCreateDto

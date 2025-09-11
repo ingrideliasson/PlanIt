@@ -397,7 +397,7 @@ const handleAssignUser = async (taskId, userId) => {
         
         <div className="flex items-center ml-6 mb-4">
           <MemberAvatars
-            members={board.members}
+            members={members}
             size={32}
             showBorder={true}
             className="mr-4"
@@ -414,20 +414,31 @@ const handleAssignUser = async (taskId, userId) => {
         </div>
       
         {showAddMembers && (
-          <AddMembersModal
-            boardId={board.id}
-            existingMembers={members}
-            currentUserId={currentUser.sub}
-            onClose={() => setShowAddMembers(false)}
-            onMemberAdded={(user) => {
-              if (user.removed) {
-                setMembers((prev) => prev.filter(m => m.applicationUserId !== user.applicationUserId));
-              } else {
-                setMembers(prev => [...prev, { ...user, applicationUserId: user.applicationUserId }]);
-              }
-            }}
-          />
-        )}
+        <AddMembersModal
+          boardId={board.id}
+          existingMembers={members}
+          currentUserId={currentUser.sub}
+          onClose={() => setShowAddMembers(false)}
+          onMemberAdded={(user) => {
+            if (user.removed) {
+              // remove from header immediately
+              setMembers((prev) =>
+                prev.filter((m) => m.applicationUserId !== user.applicationUserId)
+              );
+            } else {
+              // add to header immediately, preserving colorIndex
+              setMembers((prev) => [
+                ...prev,
+                {
+                  ...user,
+                  applicationUserId: String(user.applicationUserId),
+                  colorIndex: user.colorIndex ?? 0, // 👈 keep color index
+                },
+              ]);
+            }
+          }}
+        />
+      )}
 
         <div className="flex-1 px-6 pb-6 overflow-x-auto overflow-y-hidden board-scroll" style={{ minHeight: 0, scrollbarWidth: 'thin' }}>
           <div className="flex gap-6 min-w-max items-start">
