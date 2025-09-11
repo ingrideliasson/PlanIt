@@ -75,7 +75,7 @@ export default function AddMembersModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-montserrat">
-      <div className="bg-white rounded-lg p-6 w-96 relative">
+      <div className="bg-white rounded-lg p-6 w-128 relative">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -89,7 +89,7 @@ export default function AddMembersModal({
           type="text"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          placeholder="Search by username"
+          placeholder="Search name or email"
           className="w-full border rounded px-2 py-1 mb-4"
         />
 
@@ -104,7 +104,7 @@ export default function AddMembersModal({
             const isMember = existingMembers.some(m => m.applicationUserId === userId);
 
             return (
-              <li key={userId} className="flex justify-between items-center border-b pb-1">
+              <li key={userId} className="flex justify-between items-center border-b pb-1 text-sm">
                 <div>
                   <span className="mr-4">{`${user.firstName ?? ""} ${user.lastName ?? ""}`}</span>
                   <span className="text-gray-500 text-sm">{user.userName}</span>
@@ -114,8 +114,8 @@ export default function AddMembersModal({
                   <button
                     disabled={processingUserIds.includes(userId)}
                     onClick={() => handleToggleMember(user)}
-                    className={`px-2 py-1 rounded text-white ${
-                      isMember ? "bg-red-500 hover:bg-red-700" : "bg-green-500 hover:bg-green-700"
+                    className={`px-2 py-1 rounded text-white ml-2 ${
+                      isMember ? "bg-orange-400 hover:bg-orange-600" : "bg-emerald-400 hover:bg-emerald-500"
                     } disabled:opacity-50`}
                   >
                     {processingUserIds.includes(userId)

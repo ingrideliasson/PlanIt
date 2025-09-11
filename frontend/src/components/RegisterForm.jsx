@@ -55,7 +55,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
       </p>
 
       {/* Inputs */}
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-4">
       <input
         type="text"
         placeholder="First Name"
@@ -106,23 +106,6 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
       >
         Create Account
       </button>
-
-      {/* Divider */}
-      <div className="flex items-center gap-2 my-2 text-gray-200 text-sm">
-        <hr className="flex-1 border-gray-300" />
-        <span>or register with</span>
-        <hr className="flex-1 border-gray-200" />
-      </div>
-
-      {/* Social buttons */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        <button className="flex-1 py-2 bg-red-600 rounded hover:bg-red-700 transition-colors">
-          Google
-        </button>
-        <button className="flex-1 py-2 bg-blue-800 rounded hover:bg-blue-900 transition-colors">
-          Facebook
-        </button>
-      </div>
 
       {/* Messages */}
       {message && <p className="text-green-500 mt-2">{message}</p>}

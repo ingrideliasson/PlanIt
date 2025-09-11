@@ -37,7 +37,7 @@ export default function BoardView({ onLogout, currentUser }) {
 
   const [assigningTask, setAssigningTask] = useState(null);   
 
-  const listColors = ["#3B82F6", "#10B981", "#F472B6", "#FACC15", "#F60015"]; // Blue, Green, Pink, Yellow
+  const listColors = ["#ffc4d9", "#ffc266", "#ffb3b3", "#b3e6b3", "#b3ecff", ]; 
 
   // --- Fetch board ---
   async function fetchBoard() {
@@ -384,7 +384,7 @@ const handleAssignUser = async (taskId, userId) => {
 
   return (
   <DragDropContext onDragEnd={handleDragEnd}>
-    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-800 via-pink-800 to-yellow-400 font-montserrat relative">
+    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-yellow-100 to-pink-200  font-montserrat relative">
       
       <Header 
         onLogout={onLogout}
@@ -393,19 +393,19 @@ const handleAssignUser = async (taskId, userId) => {
 
       <div className="flex flex-col flex-1 min-h-0">
         
-        <h1 className="text-white text-3xl font-montserrat pl-8 px-6 mb-4">{board.title}</h1>
+        <h1 className="text-pink-900 font-bold text-3xl font-montserrat pl-8 px-6 mb-6">{board.title}</h1>
         
-        <div className="flex items-center ml-6 mb-4">
+        <div className="flex items-center ml-7 mb-4">
           <MemberAvatars
             members={members}
             size={32}
-            showBorder={true}
+            showBorder={false}
             className="mr-4"
           />
 
           {board && currentUser && board.ownerId === currentUser.sub && (
             <button
-              className="px-3 py-1 text-amber-600 hover:underline text-left text-sm"
+              className="px-3 py-1 text-pink-900 hover:underline text-left text-sm"
               onClick={() => setShowAddMembers(true)}
             >
               Handle members
@@ -462,7 +462,7 @@ const handleAssignUser = async (taskId, userId) => {
                             if (e.key === "Escape") cancelListEdit();
                           }}
                           autoFocus
-                          className="bg-orange-300 text-amber-950 border-b border-amber-950 focus:outline-none text-sm ml-2 flex-1"
+                          className="bg-white text-gray-500 border-b border-amber-950 focus:outline-none text-sm ml-2 flex-1"
                         />
                       ) : (
                         <h2
@@ -502,7 +502,7 @@ const handleAssignUser = async (taskId, userId) => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`group bg-white text-gray-600 text-left font-opensans py-4 rounded-lg text-sm flex flex-col px-3 relative ${snapshot.isDragging ? "shadow-lg" : ""}`}
+                                className={`group bg-white text-gray-600 text-left font-opensans py-4 rounded-lg text-sm flex flex-col px-2 relative ${snapshot.isDragging ? "shadow-lg" : ""}`}
                               >
                                 {/* Task completed toggle */}
                                 <button
@@ -555,7 +555,7 @@ const handleAssignUser = async (taskId, userId) => {
                                 {/* Assign button */}
                                 <button
                                   type="button"
-                                  className="absolute top-8 right-2 text-gray-500 hover:text-blue-700 text-sm"
+                                  className="absolute top-8 right-2 text-gray-500 hover:text-amber-950 text-sm"
                                   onClick={() => setAssigningTask(task)}
                                   title="Assign members"
                                 >
@@ -569,6 +569,7 @@ const handleAssignUser = async (taskId, userId) => {
                                       members={task.assignedUsers}
                                       size={24}
                                       showBorder={false}
+
                                     />
                                   </div>
                                 )}
@@ -590,10 +591,10 @@ const handleAssignUser = async (taskId, userId) => {
                           onChange={(e) => setTaskTitle(list.id, e.target.value)}
                           placeholder="Enter title..."
                           autoFocus
-                          className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-amber-900 focus:outline-none placeholder:text-amber-700"
+                          className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-gray-900 focus:outline-none placeholder:text-gray-900"
                         />
                         <div className="flex gap-2">
-                          <button type="submit" disabled={addTaskLoading[list.id]} className="px-3 py-1 rounded-lg bg-amber-700 text-white text-sm hover:bg-amber-800">
+                          <button type="submit" disabled={addTaskLoading[list.id]} className="px-3 py-1 rounded-lg bg-orange-700 text-white text-sm hover:bg-orange-800">
                             {addTaskLoading[list.id] ? "Adding…" : "Add"}
                           </button>
                           <button type="button" onClick={() => { setTaskTitle(list.id, ""); setAddingTaskForListId(null); }} className="py-1 bg-transparent text-amber-950 text-xl">
@@ -602,8 +603,8 @@ const handleAssignUser = async (taskId, userId) => {
                         </div>
                       </form>
                     ) : (
-                      <button onClick={() => setAddingTaskForListId(list.id)} className="text-amber-900 hover:text-white text-sm text-left">
-                        <div className="p-2 rounded-lg hover:bg-amber-700">+ Add Task</div>
+                      <button onClick={() => setAddingTaskForListId(list.id)} className="text-pink-950 hover:font-semibold text-sm text-left">
+                        <div className="p-2 rounded-lg">+ Add Task</div>
                       </button>
                     )}
                   </div>
@@ -612,7 +613,7 @@ const handleAssignUser = async (taskId, userId) => {
             ))}
 
             {/* Add new list card */}
-            <div className="bg-orange-400 text-amber-950 font-montserrat rounded-lg text-sm p-4 flex-shrink-0 w-64 flex flex-col justify-center">
+            <div className="bg-orange-300 text-pink-950 font-montserrat rounded-lg text-sm p-4 flex-shrink-0 w-64 flex flex-col justify-center">
               {addingList ? (
                 <form id="add-list-form" onSubmit={submitAddList} className="flex flex-col">
                   <input
@@ -624,7 +625,7 @@ const handleAssignUser = async (taskId, userId) => {
                     className="bg-transparent text-center w-full border-b border-amber-950 pb-2 mb-3 focus:outline-none placeholder:text-amber-700"
                   />
                   <div className="flex gap-2 justify-center">
-                    <button type="submit" disabled={addListLoading} className="px-3 py-1 rounded-lg bg-amber-700 text-white hover:bg-amber-800">
+                    <button type="submit" disabled={addListLoading} className="px-3 py-1 rounded-lg bg-orange-700 text-white hover:bg-orange-800">
                       {addListLoading ? "Adding…" : "Add"}
                     </button>
                     <button type="button" onClick={() => { setAddingList(false); setNewListTitle(""); }} className="py-1 text-amber-950 text-xl">

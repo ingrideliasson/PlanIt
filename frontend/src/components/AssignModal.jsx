@@ -37,8 +37,8 @@ export default function AssignModal({ task, members, onClose, onAssign, onUnassi
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg p-4 w-80">
-        <h3 className="text-lg font-semibold mb-3">Assign Members</h3>
+      <div className="bg-white rounded-lg p-4 w-80 ">
+        <h3 className="text-lg font-semibold mb-3 font-montserrat">Assign Members</h3>
 
         <ul className="space-y-2 max-h-64 overflow-y-auto">
           {[...members]
@@ -61,7 +61,7 @@ export default function AssignModal({ task, members, onClose, onAssign, onUnassi
                     onClick={() => handleToggleAssignment(member)}
                     disabled={processing}
                     className={`px-2 py-1 rounded text-white ${
-                      assigned ? "bg-red-500 hover:bg-red-700" : "bg-green-500 hover:bg-green-700"
+                      assigned ? "bg-orange-400 hover:bg-orange-600" : "bg-emerald-400 hover:bg-emerald-500"
                     } disabled:opacity-50`}
                   >
                     {processing ? (assigned ? "Removing…" : "Assigning…") : assigned ? "Remove" : "Assign"}

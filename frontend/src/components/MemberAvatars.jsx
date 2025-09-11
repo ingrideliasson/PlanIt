@@ -1,16 +1,14 @@
 import React from "react";
 
 const avatarColors = [
-  "#F59E0B", // owner
-  "#3B82F6", // blue
-  "#EF4444", // red
-  "#F472B6", // pink
-  "#10B981", // green
-  "#8B5CF6",  // purple
-  "#6B5CF6",
-  "#7B5CF6",
-  "#5B5CF6",
-  "#4B5CF6",
+  "#ffa31a", 
+  "#6ca9c6", 
+  "#bb77a3", 
+  "#f8c42d", 
+  "#9ec499",
+  "#c26868", 
+  "#668957",
+  "#d65cad",
 ];
 
 export default function MemberAvatars({ members = [], size = 32, showBorder = false, className = "" }) {
