@@ -24,7 +24,7 @@ export default function Header({ onLogout, currentUser }) {
       </div>
 
       <div
-        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm bg-fuchsia-800"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm bg-cyan-600"
         title={`${currentUser?.firstName ?? ""} ${currentUser?.lastName ?? ""}`}
       >
         {initials}
