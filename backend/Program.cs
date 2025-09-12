@@ -100,13 +100,10 @@ app.UseCors("AllowAll");              // CORS first
 app.UseHttpsRedirection();
 app.UseAuthentication();    // Authentication before Authorization
 app.UseAuthorization();
+app.MapControllers();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-
-// Listen on all network interfaces at the specified port
 app.Urls.Add($"http://*:{port}");
-
-app.MapControllers();
 
 app.Run();
 
