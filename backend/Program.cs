@@ -6,12 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DB context with SQLite
+var dbPath = Path.Combine(AppContext.BaseDirectory, "app.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite($"Data Source={dbPath}"));
 
 // ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -110,6 +112,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+app.UseDeveloperExceptionPage();
 
 
 app.Run();
