@@ -104,8 +104,11 @@ app.UseCors();              // CORS first
 app.UseHttpsRedirection();
 app.UseAuthentication();    // Authentication before Authorization
 app.UseAuthorization();
-
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
+
 
 app.Run();
 
