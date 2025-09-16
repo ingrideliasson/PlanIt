@@ -9,7 +9,7 @@ Welcome to [Plan It](https://planit-z230.onrender.com/login)! This is a Trello-i
 - React
 - Tailwind CSS
 
-## Getting started, t
+## Getting started
 A live demo site is accessible [here](https://planit-z230.onrender.com/login). Note that it may take a minute to start up. Also note that data is not persistent, the site is only a demo. 
 
 To get the app running locally on your computer, follow these steps. 
