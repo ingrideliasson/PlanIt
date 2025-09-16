@@ -19,9 +19,6 @@ backend/bin/
 .vscode/
 *.swp
 
-# Entity Framework migrations backup
-backend/Migrations/
-
 # ---------------------
 # Node / React ignores
 # ---------------------
