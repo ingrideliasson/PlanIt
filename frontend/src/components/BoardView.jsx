@@ -37,7 +37,7 @@ export default function BoardView({ onLogout, currentUser }) {
 
   const [assigningTask, setAssigningTask] = useState(null);   
 
-  const listColors = ["#ffc4d9", "#ffc266", "#ffb3b3", "#b3e6b3", "#b3ecff", ]; 
+  const listColors = ["#9b6686", "#92415b", "#92415b", "#92415b", ]; 
 
   // --- Fetch board ---
   async function fetchBoard() {
@@ -384,7 +384,7 @@ const handleAssignUser = async (taskId, userId) => {
 
   return (
   <DragDropContext onDragEnd={handleDragEnd}>
-    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-yellow-100 to-pink-200  font-montserrat relative">
+    <div className="min-h-screen flex flex-col bg-background-50 font-montserrat relative">
       
       <Header 
         onLogout={onLogout}
@@ -393,7 +393,7 @@ const handleAssignUser = async (taskId, userId) => {
 
       <div className="flex flex-col flex-1 min-h-0">
         
-        <h1 className="text-pink-900 font-bold text-3xl font-montserrat pl-8 px-6 mb-6">{board.title}</h1>
+        <h1 className="text-amber-950 tracking-wider text-3xl font-montserrat pl-8 px-6 mb-6">{board.title}</h1>
         
         <div className="flex items-center ml-7 mb-4">
           <MemberAvatars
@@ -405,7 +405,7 @@ const handleAssignUser = async (taskId, userId) => {
 
           {board && currentUser && board.ownerId === currentUser.sub && (
             <button
-              className="px-3 py-1 text-pink-900 hover:underline text-left text-sm"
+              className="px-3 py-1 text-amber-950 hover:underline text-left text-sm"
               onClick={() => setShowAddMembers(true)}
             >
               Handle members
@@ -507,7 +507,7 @@ const handleAssignUser = async (taskId, userId) => {
                                 {/* Task completed toggle */}
                                 <button
                                   onClick={() => toggleTaskDone(list.id, task)}
-                                  className={`absolute left-3 w-4 h-4 rounded-full border-2 flex items-center justify-center ${task.isCompleted ? "bg-green-500 border-green-500" : "border-gray-400"} ${task.isCompleted ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
+                                  className={`absolute left-3 w-4 h-4 rounded-full border-2 flex items-center justify-center ${task.isCompleted ? "bg-lime-600 border-lime-600" : "border-gray-400"} ${task.isCompleted ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
                                 >
                                   {task.isCompleted && <div className="w-2 h-2 rounded-full bg-white"></div>}
                                 </button>
@@ -594,7 +594,7 @@ const handleAssignUser = async (taskId, userId) => {
                           className="w-full rounded-lg px-3 py-2 text-sm mb-2 bg-transparent text-gray-900 focus:outline-none placeholder:text-gray-900"
                         />
                         <div className="flex gap-2">
-                          <button type="submit" disabled={addTaskLoading[list.id]} className="px-3 py-1 rounded-lg bg-orange-700 text-white text-sm hover:bg-orange-800">
+                          <button type="submit" disabled={addTaskLoading[list.id]} className="px-3 text-sm  rounded-lg bg-transparent border border-orange-950 text-orange-950 hover:border-2 hover:font-bold">
                             {addTaskLoading[list.id] ? "Adding…" : "Add"}
                           </button>
                           <button type="button" onClick={() => { setTaskTitle(list.id, ""); setAddingTaskForListId(null); }} className="py-1 bg-transparent text-amber-950 text-xl">
@@ -625,7 +625,7 @@ const handleAssignUser = async (taskId, userId) => {
                     className="bg-transparent text-center w-full border-b border-amber-950 pb-2 mb-3 focus:outline-none placeholder:text-amber-700"
                   />
                   <div className="flex gap-2 justify-center">
-                    <button type="submit" disabled={addListLoading} className="px-3 py-1 rounded-lg bg-orange-700 text-white hover:bg-orange-800">
+                    <button type="submit" disabled={addListLoading} className="px-3 py-1 rounded-lg bg-transparent border border-orange-950 text-orange-950 hover:border-2 hover:font-bold">
                       {addListLoading ? "Adding…" : "Add"}
                     </button>
                     <button type="button" onClick={() => { setAddingList(false); setNewListTitle(""); }} className="py-1 text-amber-950 text-xl">
@@ -651,8 +651,8 @@ const handleAssignUser = async (taskId, userId) => {
           <p className="mb-2">
             {confirmingDelete.type === 'task' ? 'Delete this task?' : 'Delete this list?'}
           </p>
-          <div className="flex gap-2">
-            <button className="px-2 py-1 bg-orange-600 text-white rounded" onClick={() => {
+          <div className="flex gap-2 justify-center">
+            <button className="px-2 py-1 bg-red-500 text-white rounded" onClick={() => {
               if (confirmingDelete.type === 'task') {
                 const list = board.taskLists.find(l => l.id === confirmingDelete.listId);
                 const task = list.taskItems.find(t => t.id === confirmingDelete.taskId);

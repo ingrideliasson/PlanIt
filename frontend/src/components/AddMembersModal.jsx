@@ -83,7 +83,7 @@ export default function AddMembersModal({
           <RxCross1 />
         </button>
 
-        <h2 className="text-lg mb-4">Handle Members</h2>
+        <h2 className="text-lg mb-4 text-center">Handle Members</h2>
 
         <input
           type="text"
@@ -114,8 +114,8 @@ export default function AddMembersModal({
                   <button
                     disabled={processingUserIds.includes(userId)}
                     onClick={() => handleToggleMember(user)}
-                    className={`px-2 py-1 rounded text-white ml-2 ${
-                      isMember ? "bg-orange-400 hover:bg-orange-600" : "bg-emerald-400 hover:bg-emerald-500"
+                    className={`px-2 py-1 rounded text-bla ml-2 ${
+                      isMember ? "bg-neutral-200 hover:bg-neutral-300" : "bg-neutral-200 hover:bg-neutral-300"
                     } disabled:opacity-50`}
                   >
                     {processingUserIds.includes(userId)

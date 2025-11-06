@@ -1,14 +1,15 @@
 import React from "react";
 
 const avatarColors = [
-  "#ffa31a", 
-  "#6ca9c6", 
-  "#bb77a3", 
-  "#f8c42d", 
-  "#9ec499",
-  "#c26868", 
-  "#668957",
-  "#d65cad",
+  "#9b6686", // emerald-100/200
+  "#65b0bd", // emerald-200
+  "#ffb35a", // green-200
+  "#507246", // amber-300
+  "#208596", // stone-200
+  "#af5975", // slate-300
+  "#5e376d", // slate-50
+  "#208596", // slate-200
+  "#20ab96", // slate-200
 ];
 
 export default function MemberAvatars({ members = [], size = 32, showBorder = false, className = "" }) {
@@ -25,7 +26,7 @@ export default function MemberAvatars({ members = [], size = 32, showBorder = fa
         return (
           <div
             key={uid}
-            className={`rounded-full flex items-center justify-center text-white font-semibold leading-none ${showBorder ? "border-2 border-white" : ""}`}
+            className={`rounded-full flex items-center justify-center text-neutral-100 font-semibold leading-none ${showBorder ? "border-2 border-white" : ""}`}
             style={{
               backgroundColor: bgColor,
               width: `${size}px`,

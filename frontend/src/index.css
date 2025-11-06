@@ -27,3 +27,8 @@
 .board-scroll::-webkit-scrollbar {
   height: 0;
 }
+
+.auth-blob {
+  background: radial-gradient(600px 300px at 30% 40%, rgba(161, 77, 102, 0.28), transparent 60%),
+              radial-gradient(500px 250px at 70% 60%, rgba(101, 158, 111, 0.22), transparent 60%);
+}

@@ -3,6 +3,7 @@ import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+// using native inputs to match original structure
 
 export default function LoginForm({ onLogin, switchToRegister }) {
   const [email, setEmail] = useState("");
@@ -45,13 +46,13 @@ export default function LoginForm({ onLogin, switchToRegister }) {
 return (
   <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
     {/* Title */}
-    <h2 className="text-4xl text-white font-montserrat">Login</h2>
-    <p className="text-sm font-montserrat text-white mb-2">
+    <h2 className="text-4xl text-neutral-100 tracking-wider font-montserrat">Login</h2>
+    <p className="text-sm font-montserrat text-neutral-200 mb-2">
       No account?{" "}
       <button
         type="button"
         onClick={switchToRegister}
-        className="underline hover:text-pink-300"
+        className="underline text-primary-700 hover:text-neutral-100"
       >
         Register
       </button>
@@ -64,7 +65,7 @@ return (
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       required
-      className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+      className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
     />
 
     {/* Password input with toggle */}
@@ -75,7 +76,7 @@ return (
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full px-4 py-2 rounded bg-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
       <button
         type="button"
@@ -92,14 +93,14 @@ return (
     {/* Submit button */}
     <button
       type="submit"
-      className="w-full py-3 bg-orange-600 rounded-lg hover:bg-orange-500 transition-colors text-white text-xl font-montserrat"
+      className="w-full py-3 bg-transparent rounded-lg hover:scale-105 hover:underline transition-colors text-white text-lg font-montserrat"
     >
       Login
     </button>
 
     {/* Messages */}
-    {message && <p className="text-green-500 mt-2">{message}</p>}
-    {error && <p className="text-orange-500 mt-2">{error}</p>}
+    {message && <p className="text-green-600 mt-2">{message}</p>}
+    {error && <p className="text-red-600 mt-2">{error}</p>}
   </form>
 );
 

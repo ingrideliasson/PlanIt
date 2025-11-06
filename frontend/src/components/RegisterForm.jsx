@@ -42,13 +42,13 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       {/* Title */}
-      <h1 className="text-4xl font-montserrat text-white">Create Account</h1>
-      <p className="text-sm font-montserrat text-white mb-2">
+      <h1 className="text-4xl font-montserrat text-neutral-100 tracking-wider">Create Account</h1>
+      <p className="text-sm font-montserrat text-neutral-200 mb-2">
         Already have an account?{" "}
         <button
           type="button"
           onClick={switchToLogin}
-          className="underline hover:text-pink-300"
+          className="underline text-primary-700 hover:text-neutral-100"
         >
           Log in
         </button>
@@ -56,22 +56,22 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
 
       {/* Inputs */}
       <div className="flex flex-row gap-4">
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-      />
+        <input
+          type="text"
+          placeholder="First Name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+          className="w-full px-4 py-2 rounded border-2 border-stone-300 bg-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        />
+        <input
+          type="text"
+          placeholder="Last Name"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        />
       </div>
 
       <input
@@ -80,7 +80,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
       <input
         type="password"
@@ -88,7 +88,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
       <input
         type="password"
@@ -96,20 +96,20 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
 
       {/* Submit button */}
       <button
         type="submit"
-        className="w-full py-3 bg-orange-600 rounded-lg hover:bg-orange-500 transition-colors text-white text-xl font-montserrat"
+        className="w-full py-3 bg-transparent rounded-lg hover:scale-105 hover:underline transition-colors text-white text-lg font-montserrat"
       >
-        Create Account
+        Register
       </button>
 
       {/* Messages */}
-      {message && <p className="text-green-500 mt-2">{message}</p>}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {message && <p className="text-neutral-100 text-sm mt-2">{message}</p>}
+      {error && <p className="text-neutral-100 text-md mt-2">{error}</p>}
     </form>
   );
 }
