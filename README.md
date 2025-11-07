@@ -1,12 +1,12 @@
 # Plan It
 
-Welcome to [Plan It](https://planit-z230.onrender.com/login)! This is a Trello-inspired web application that can be used for task management and issue tracking. 
+Welcome to [Plan It](https://planit-z230.onrender.com/login)! This is a Trello-inspired web application that can be used for task management and issue tracking. It features full CRUD, full authentication/authorization, a colorful UI, and a Kanban view with smooth drag-and-dropping. 
 
 ## Built with
 - ASP.NET Core WebAPI
 - SQLite
 - Entity Framework
-- React
+- React (Javascript)
 - Tailwind CSS
 
 ## Getting started
@@ -72,7 +72,7 @@ Plan It can be used for task management or issue tracking. Like Trello, it featu
 ### 1. Register a user
 
 The email does not have to be a real address, so you can use a dummy address. Choose a strong password. Note that the passwords are encrypted in the database and are not visible to anyone.
-<img width="1562" height="881" alt="Register a user" src="https://github.com/user-attachments/assets/5643d486-6f2a-435f-8b46-a9beca65761a" />
+<img width="1307" height="654" alt="Skärmavbild 2025-11-07 kl  16 25 19" src="https://github.com/user-attachments/assets/d4af5139-90fd-44b7-b26c-376c2a110387" />
 
 ### 2. Log in
 
@@ -81,35 +81,36 @@ After registration, you will be redirected to a login form. Log in with your cre
 ### 3. Create your board
 
 Click "Add new board" and enter a title. After the board is created, you can update the title by clicking the edit button, or delete it with the delete button. Click the title of the board to navigate to the board view. 
-<img width="1365" height="799" alt="Dashboard" src="https://github.com/user-attachments/assets/54182364-4a8b-469c-9f46-e8c173ed4b76" />
+
+<img width="1306" height="777" alt="Skärmavbild 2025-11-07 kl  15 50 12" src="https://github.com/user-attachments/assets/299cf848-257a-4a9d-8026-e9893abdcbe6" />
 
 
 ### 4. Create lists and tasks
 
 You are now in the board view. Create a new list by cicking "Add new list" and enter a title. Add a task to the list by clicking "Add task" and enter a title. Click the title of the list to update it. Click the delete button to delete the list and all tasks on it. 
-<img width="898" height="716" alt="Board view" src="https://github.com/user-attachments/assets/b58aa4f5-85a4-4b7c-b7c7-96d81d0f2b71" />
+
+<img width="901" height="496" alt="Skärmavbild 2025-11-07 kl  15 57 34" src="https://github.com/user-attachments/assets/e40e5567-3775-4ecb-a168-a9a36d937317" />
 
 ### 5. Task actions
 
 Hover over the task to see a circle that can be clicked to mark the task as done. If you want to move a task, you can drag it and drop it on another list. Click the title of the task to update it. Click the cross to delete it. 
-<img width="560" height="426" alt="Move tasks" src="https://github.com/user-attachments/assets/e6a48791-3cc4-4162-b586-dcc8f32ed4d1" />
-<img width="564" height="432" alt="Mark as complete" src="https://github.com/user-attachments/assets/6509044c-2133-4c19-938f-5e83d88a6c2a" />
+
+<img width="565" height="326" alt="Skärmavbild 2025-11-07 kl  16 19 28" src="https://github.com/user-attachments/assets/3089add8-194f-4709-b2ff-5c96390e356c" />
+<img width="568" height="363" alt="Skärmavbild 2025-11-07 kl  15 59 35" src="https://github.com/user-attachments/assets/3c900e7b-0eca-4ffb-a101-a0f86460d02c" />
 
 ### 6. Add members to the board
 
 In the header, click "Handle members" to search for other existing users by name or email address. Click "Add" to add a user to your board. When they are added, their avatar is added to your header. For the added user, your board will show up on their dashboard. Remove a member by clicking "Handle members" and "Remove". Only the owner of the board can add and remove other users to their board. Otherwise, invited members can perform all actions. 
 
-<img width="478" height="147" alt="Handle members" src="https://github.com/user-attachments/assets/3ad120de-824e-4f81-9c61-b94ec235a1b1" />
-
-<img width="384" height="216" alt="Skärmavbild 2025-09-15 kl  10 08 07" src="https://github.com/user-attachments/assets/6c5d0ebc-f1b3-4889-8b50-86299a9be47f" />
+<img width="497" height="141" alt="Skärmavbild 2025-11-07 kl  16 01 30" src="https://github.com/user-attachments/assets/dbbb41bb-9d0c-4686-b124-6627ce60fa34" />
+<img width="361" height="202" alt="Skärmavbild 2025-11-07 kl  16 22 24" src="https://github.com/user-attachments/assets/ee9ead1f-9fc6-41e4-bc47-28e6440f0f06" />
 
 ### 7. Assign members to task
 
 Click the person icon on a task to assign members to it. All members added to the board can be assigned. When a member is assigned, their avatar will show up on the task. 
 
-<img width="365" height="430" alt="Assign members" src="https://github.com/user-attachments/assets/2bae99e7-a533-4754-9c8a-596df5392e7e" />
-
-<img width="1152" height="748" alt="Skärmavbild 2025-09-16 kl  12 34 20" src="https://github.com/user-attachments/assets/35c6f597-d142-4363-b8e9-82f868559f50" />
+<img width="337" height="395" alt="Skärmavbild 2025-11-07 kl  16 01 55" src="https://github.com/user-attachments/assets/2aca203b-986e-4d6a-8332-8b2791a2e483" />
+<img width="1688" height="620" alt="Skärmavbild 2025-11-07 kl  16 03 37" src="https://github.com/user-attachments/assets/2bb18de3-a642-48ce-b878-141f1c3cf5d7" />
 
 
 
