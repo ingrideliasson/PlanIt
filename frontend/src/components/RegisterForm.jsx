@@ -62,7 +62,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded border-2 border-stone-300 bg-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-4 py-2 rounded"
         />
         <input
           type="text"
@@ -70,7 +70,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-4 py-2 rounded"
         />
       </div>
 
@@ -80,7 +80,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full px-4 py-2 rounded"
       />
       <input
         type="password"
@@ -88,7 +88,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full px-4 py-2 rounded placeholder-surface-400"
       />
       <input
         type="password"
@@ -96,7 +96,7 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded border-2 border-stone-300 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full px-4 py-2 rounded placeholder-surface-400"
       />
 
       {/* Submit button */}
@@ -108,8 +108,8 @@ export default function RegisterForm({ onSuccess, switchToLogin }) {
       </button>
 
       {/* Messages */}
-      {message && <p className="text-neutral-100 text-sm mt-2">{message}</p>}
-      {error && <p className="text-neutral-100 text-md mt-2">{error}</p>}
+      {message && <p className="text-red-600text-sm mt-2">{message}</p>}
+      {error && <p className="text-red-600 text-md mt-2">{error}</p>}
     </form>
   );
 }

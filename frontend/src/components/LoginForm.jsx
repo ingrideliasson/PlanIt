@@ -3,7 +3,6 @@ import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
-// using native inputs to match original structure
 
 export default function LoginForm({ onLogin, switchToRegister }) {
   const [email, setEmail] = useState("");
@@ -46,7 +45,7 @@ export default function LoginForm({ onLogin, switchToRegister }) {
 return (
   <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
     {/* Title */}
-    <h2 className="text-4xl text-neutral-100 tracking-wider font-montserrat">Login</h2>
+    <h2 className="text-4xl text-white tracking-wider font-montserrat">Login</h2>
     <p className="text-sm font-montserrat text-neutral-200 mb-2">
       No account?{" "}
       <button
@@ -65,7 +64,7 @@ return (
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       required
-      className="w-full px-4 py-2 rounded bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+      className="w-full px-4 py-2 rounded bg-white placeholder-gray-400"
     />
 
     {/* Password input with toggle */}
@@ -76,7 +75,7 @@ return (
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full px-4 py-2 rounded bg-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full px-4 py-2 rounded bg-white"
       />
       <button
         type="button"

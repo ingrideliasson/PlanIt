@@ -1,7 +1,5 @@
 import React from "react";
 import { RxCross1 } from "react-icons/rx";
-import TextInput from "../ui/TextInput";
-import Button from "../ui/Button";
 
 export default function AddListCard({
   adding,
@@ -13,29 +11,38 @@ export default function AddListCard({
   onCancel,
 }) {
   return (
-    <div className="bg-white border border-surface-200 text-surface-800 font-montserrat rounded-xl text-sm p-4 flex-shrink-0 w-64 flex flex-col justify-center shadow-card">
+    <div className="bg-neutral-100 text-neutral-700 font-montserrat rounded-lg text-sm p-4 flex-shrink-0 w-64 flex flex-col justify-center shadow-md">
       {adding ? (
-        <form onSubmit={onSubmit} className="flex flex-col">
-          <TextInput
+        <form id="add-list-form" onSubmit={onSubmit} className="flex flex-col">
+          <input
+            id="new-list-input"
             autoFocus
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="text-center mb-3"
+            className="bg-transparent text-center w-full border-b border-amber-950 pb-2 mb-3 focus:outline-none placeholder:text-amber-700"
           />
           <div className="flex gap-2 justify-center">
-            <Button type="submit" disabled={loading} variant="outline">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-transparent text-neutral-700 hover:underline"
+            >
               {loading ? "Adding…" : "Add"}
-            </Button>
-            <button type="button" onClick={onCancel} className="py-1 text-primary-900 text-xl">
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="py-1 text-neutral-700 hover:scale-105 text-lg"
+            >
               <RxCross1 />
             </button>
           </div>
         </form>
       ) : (
         <div className="text-center">
-          <button onClick={onStart} className="text-surface-700 hover:font-semibold">
-            + Add new list
+          <button onClick={onStart} className="text-neutral-700 hover:font-semibold">
+            + Add List
           </button>
         </div>
       )}

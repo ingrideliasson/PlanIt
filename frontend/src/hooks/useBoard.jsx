@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api, { setAuthToken } from "../services/api";
 
 export default function useBoard(boardId) {
@@ -22,17 +22,14 @@ export default function useBoard(boardId) {
 
   const [confirmingDelete, setConfirmingDelete] = useState(null);
   const [assigningTask, setAssigningTask] = useState(null);
+  const [showAddMembers, setShowAddMembers] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) setAuthToken(token);
-    if (boardId) fetchBoard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardId]);
-
-  async function fetchBoard() {
+  const fetchBoard = useCallback(async () => {
+    if (!boardId) return;
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
+      if (token) setAuthToken(token);
       const res = await api.get(`/boards/${boardId}/details`);
       setBoard(res.data);
     } catch (err) {
@@ -41,11 +38,25 @@ export default function useBoard(boardId) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [boardId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setAuthToken(token);
+    
+    if (boardId) {
+      fetchBoard();
+    } else {
+      setLoading(false);
+      setBoard(null);
+    }
+  }, [boardId, fetchBoard]);
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (token) setAuthToken(token);
         const res = await api.get(`/boards/${boardId}/users`);
         setMembers(res.data.map(m => ({ ...m, applicationUserId: String(m.applicationUserId) })));
       } catch (err) {
@@ -94,7 +105,7 @@ export default function useBoard(boardId) {
         ...prev,
         taskLists: [
           ...prev.taskLists,
-          { id: res.data.id, title: res.data.title, taskItems: [], colorIndex: res.data.colorIndex }
+          { id: res.data.id, title: res.data.title, taskItems: [], colorIndex: res.data.colorIndex, position: res.data.position }
         ]
       }));
       setNewListTitle("");
@@ -203,10 +214,9 @@ export default function useBoard(boardId) {
     }
   }
 
-  const openAssignModal = (taskId) => {
+  const openAssignModal = (task) => {
     if (!board) return;
-    const taskFromState = board.taskLists.flatMap(list => list.taskItems).find(task => task.id === taskId);
-    setAssigningTask(taskFromState);
+    setAssigningTask(task);
   };
 
   const closeAssignModal = () => setAssigningTask(null);
@@ -276,13 +286,72 @@ export default function useBoard(boardId) {
   };
 
   async function handleDragEnd(result) {
-    const { source, destination, draggableId } = result;
+    const { source, destination, draggableId, type } = result;
     if (!destination) return;
-    const sourceListId = source.droppableId;
-    const destListId = destination.droppableId;
+    
     const sourceIndex = source.index;
     const destIndex = destination.index;
-    if (sourceListId === destListId && sourceIndex === destIndex) return;
+    if (source.index === destIndex && source.droppableId === destination.droppableId) return;
+
+    // Handle list dragging
+    if (type === "LIST") {
+      // draggableId is in format "list-{id}"
+      const listId = parseInt(draggableId.replace("list-", ""));
+      
+      console.log("Moving list:", { listId, sourceIndex, destIndex, type });
+      
+      // Calculate the final destination index before state update
+      const sortedLists = [...board.taskLists].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+      const finalDestIndex = Math.min(Math.max(destIndex, 0), sortedLists.length - 1);
+      
+      // Optimistically update UI - ensure we work with sorted lists
+      setBoard(prev => {
+        if (!prev || !prev.taskLists) return prev;
+        
+        // Get sorted lists to match what's rendered
+        const sortedLists = [...prev.taskLists].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+        
+        // Deep copy lists to avoid mutations
+        const listsCopy = sortedLists.map(list => ({
+          ...list,
+          taskItems: list.taskItems ? list.taskItems.map(task => ({ ...task })) : []
+        }));
+        
+        // Move the list
+        if (sourceIndex < 0 || sourceIndex >= listsCopy.length) {
+          console.error("Invalid source index:", sourceIndex);
+          return prev;
+        }
+        
+        const [movedList] = listsCopy.splice(sourceIndex, 1);
+        listsCopy.splice(finalDestIndex, 0, movedList);
+        
+        // Create new objects with updated positions
+        const updatedLists = listsCopy.map((list, i) => ({ ...list, position: i }));
+        
+        console.log("Updated lists positions:", updatedLists.map(l => ({ id: l.id, position: l.position })));
+        
+        return { ...prev, taskLists: updatedLists };
+      });
+      
+      try {
+        const token = localStorage.getItem("token");
+        if (token) setAuthToken(token);
+        console.log("Calling API with position:", finalDestIndex);
+        const response = await api.put(`/tasklists/${listId}/move`, { position: finalDestIndex });
+        console.log("List move successful:", response.status);
+      } catch (err) {
+        console.error("Failed to move list:", err);
+        console.error("Error details:", err.response?.data || err.message);
+        // Revert on error
+        fetchBoard();
+      }
+      return;
+    }
+
+    // Handle task dragging (existing logic)
+    const sourceListId = source.droppableId;
+    const destListId = destination.droppableId;
     const taskId = parseInt(draggableId);
     setBoard(prev => {
       const listsCopy = prev.taskLists.map(list => ({ ...list, taskItems: [...list.taskItems] }));
@@ -302,11 +371,46 @@ export default function useBoard(boardId) {
     }
   }
 
+  // Helper functions for delete confirmation
+  const handleConfirmDelete = () => {
+    if (!confirmingDelete || !board) return;
+
+    if (confirmingDelete.type === "task") {
+      const list = board.taskLists.find(l => l.id === confirmingDelete.listId);
+      const task = list.taskItems.find(t => t.id === confirmingDelete.taskId);
+      handleDeleteTask(list, task);
+    } else {
+      const list = board.taskLists.find(l => l.id === confirmingDelete.listId);
+      handleDeleteList(list);
+    }
+    setConfirmingDelete(null);
+  };
+
+  const handleAskDeleteList = (e, list) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setConfirmingDelete({
+      type: "list",
+      listId: list.id,
+      position: { top: rect.bottom, left: rect.left },
+    });
+  };
+
+  const handleAskDeleteTask = (listId, taskId, rect) => {
+    setConfirmingDelete({
+      type: "task",
+      taskId: taskId,
+      listId: listId,
+      position: { top: rect.bottom, left: rect.left },
+    });
+  };
+
   return {
     board,
     loading,
     members,
     setMembers,
+    showAddMembers,
+    setShowAddMembers,
     addingList,
     setAddingList,
     newListTitle,
@@ -335,6 +439,9 @@ export default function useBoard(boardId) {
     cancelListEdit,
     confirmingDelete,
     setConfirmingDelete,
+    handleConfirmDelete,
+    handleAskDeleteList,
+    handleAskDeleteTask,
     assigningTask,
     setAssigningTask,
     openAssignModal,

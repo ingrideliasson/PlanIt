@@ -1,16 +1,15 @@
 import React from "react";
 
 const avatarColors = [
-  "#9b6686", // emerald-100/200
-  "#65b0bd", // emerald-200
-  "#ffb35a", // green-200
-  "#507246", // amber-300
-  "#208596", // stone-200
-  "#af5975", // slate-300
-  "#5e376d", // slate-50
-  "#208596", // slate-200
-  "#20ab96", // slate-200
+  "#D169A7", // emerald-100/200
+  "#E3840B", // emerald-200
+  "#4A9EB5", // green-200
+  "#4A873D", // amber-300
+  "#6E53AD", // stone-200
+  "#EBBC00", // slate-300
+  "#993D74", // slate-50
 ];
+
 
 export default function MemberAvatars({ members = [], size = 32, showBorder = false, className = "" }) {
   const fontSize = Math.max(10, Math.round(size * 0.42));

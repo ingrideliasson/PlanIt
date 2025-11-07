@@ -21,7 +21,7 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TaskListCreateDto dto)
         {
-            // Get existing lists for this board to determine color index
+            // Get existing lists for this board to determine color index and position
             var existingLists = await _context.TaskLists
                 .Where(l => l.BoardId == dto.BoardId)
                 .ToListAsync();
@@ -29,12 +29,16 @@ namespace backend.Controllers
             // Define your default color count (matches frontend)
             int defaultColorCount = 5; // e.g., Blue, Green, Pink, Yellow
             int colorIndex = existingLists.Count % defaultColorCount;
+            
+            // Get max position to place new list at the end
+            int maxPosition = existingLists.Any() ? existingLists.Max(l => l.Position) : -1;
 
             var list = new TaskList
             {
                 Title = dto.Title,
                 BoardId = dto.BoardId,
-                ColorIndex = colorIndex
+                ColorIndex = colorIndex,
+                Position = maxPosition + 1
             };
 
             _context.TaskLists.Add(list);
@@ -45,7 +49,8 @@ namespace backend.Controllers
                 Id = list.Id,
                 Title = list.Title!,
                 BoardId = list.BoardId,
-                ColorIndex = list.ColorIndex // Return color index
+                ColorIndex = list.ColorIndex, // Return color index
+                Position = list.Position
             };
 
             return Ok(result);
@@ -72,6 +77,37 @@ namespace backend.Controllers
             if (list == null) return NotFound();
 
             _context.TaskLists.Remove(list);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // PUT: Move list to new position
+        [HttpPut("{id}/move")]
+        public async Task<IActionResult> MoveList(int id, TaskListMoveDto dto)
+        {
+            var list = await _context.TaskLists.FindAsync(id);
+            if (list == null) return NotFound();
+
+            var boardId = list.BoardId;
+
+            // Get all lists for this board excluding the moving list
+            var lists = await _context.TaskLists
+                .Where(l => l.BoardId == boardId && l.Id != id)
+                .OrderBy(l => l.Position)
+                .ToListAsync();
+
+            // Clamp destination position to [0, lists.Count]
+            var position = Math.Min(Math.Max(dto.Position, 0), lists.Count);
+
+            // Insert the moving list at the new position
+            lists.Insert(position, list);
+
+            // Rebuild positions for all lists
+            for (int i = 0; i < lists.Count; i++)
+            {
+                lists[i].Position = i;
+            }
+
             await _context.SaveChangesAsync();
             return NoContent();
         }

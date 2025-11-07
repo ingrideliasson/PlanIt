@@ -60,8 +60,8 @@ export default function AssignModal({ task, members, onClose, onAssign, onUnassi
                   <button
                     onClick={() => handleToggleAssignment(member)}
                     disabled={processing}
-                    className={`px-2 py-1 rounded text-white ${
-                      assigned ? "bg-orange-400 hover:bg-orange-600" : "bg-emerald-400 hover:bg-emerald-500"
+                    className={`px-2 py-1 rounded text-black text-sm ${
+                      assigned ? "bg-neutral-200 hover:bg-neutral-300" : "bg-neutral-200 hover:bg-neutral-300"
                     } disabled:opacity-50`}
                   >
                     {processing ? (assigned ? "Removing…" : "Assigning…") : assigned ? "Remove" : "Assign"}

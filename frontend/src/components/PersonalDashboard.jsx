@@ -34,7 +34,7 @@ export default function PersonalDashboard({ onLogout }) {
   } = useBoards();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background-100 relative">
+    <div className="min-h-screen flex flex-col bg-gradient-to-tr from-fuchsia-900 via-pink-800 to-yellow-400 relative">
       <Header 
       onLogout={onLogout}
       currentUser={user} />
@@ -44,7 +44,7 @@ export default function PersonalDashboard({ onLogout }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-center gap-8 md:gap-12 lg:gap-16">
             {/* Welcome Text */}
             <div className="text-surface-900 font-playfair text-center">
-              <h1 className="tracking-wider text-5xl md:text-6xl lg:text-8xl leading-[1.05] text-amber-950">
+              <h1 className="tracking-wider text-5xl md:text-6xl lg:text-9xl leading-[1.05] text-white">
                 {user ? (
                   <>
                     Welcome,<br />
@@ -58,7 +58,7 @@ export default function PersonalDashboard({ onLogout }) {
 
             {/* Boards Section */}
             <section className="justify-self-center lg:justify-self-start w-full max-w-xs sm:max-w-sm md:max-w-sm">
-              <h2 className="text-amber-950 font-montserrat text-2xl md:text-3xl lg:text-4xl mb-4 md:mb-8 text-center">
+              <h2 className="text-white tracking-wider font-montserrat text-2xl md:text-3xl mb-4 md:mb-8 text-center">
                 Your boards
               </h2>
 
@@ -73,6 +73,7 @@ export default function PersonalDashboard({ onLogout }) {
                 onStartBoardEdit={startBoardEdit}
                 onAskDelete={(boardId, position) => setConfirmingDelete({ type: "board", boardId, position })}
                 onOpenBoard={(boardId) => navigate(`/boards/${boardId}`)}
+                currentUserId={user?.sub}
               />
               <div className="mt-4">
               {/* Add New Board */}
@@ -90,11 +91,11 @@ export default function PersonalDashboard({ onLogout }) {
                       value={newBoardTitle}
                       onChange={(e) => setNewBoardTitle(e.target.value)}
                       placeholder="Enter title"
-                      className="mb-4 px-3 py-6"
+                      className="mb-4 px-3 py-6 bg-fuchsia-900 text-neutral-700 font-montserrat"
                       autoFocus
                     />
                     <div className="flex gap-2 pl-2">
-                      <Button type="submit" disabled={addBoardLoading} variant="primary" size="sm">
+                      <Button type="submit" disabled={addBoardLoading} className="text-white" size="sm">
                         {addBoardLoading ? "Adding…" : "Add"}
                       </Button>
                       <button
@@ -103,14 +104,14 @@ export default function PersonalDashboard({ onLogout }) {
                           setAddingBoard(false);
                           setNewBoardTitle("");
                         }}
-                        className="py-1 text-amber-950 text-xl"
+                        className="py-1 text-amber-950 text-xl text-white"
                       >
                         < RxCross1 />
                       </button>
                     </div>
                   </form>
                 ) : (
-                  <Button type="button" className="w-full py-4 md:py-6 px-4 rounded-xl bg-transparent text-amber-950 font-montserrat text-lg flex" onClick={() => setAddingBoard(true)}>
+                  <Button type="button" className="w-full py-4 md:py-6 px-4 rounded-xl bg-transparent text-white font-montserrat text-lg flex" onClick={() => setAddingBoard(true)}>
                     + Add new board
                   </Button>
                 )}

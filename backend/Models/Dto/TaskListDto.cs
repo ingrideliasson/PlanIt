@@ -7,6 +7,7 @@ namespace backend.Models.Dto
         public int BoardId { get; set; }
 
         public int ColorIndex { get; set; }
+        public int Position { get; set; }
     }
 
     public class TaskListCreateDto
@@ -18,6 +19,11 @@ namespace backend.Models.Dto
     public class TaskListUpdateDto
     {
         public string Title { get; set; } = "";
+    }
+
+    public class TaskListMoveDto
+    {
+        public int Position { get; set; }
     }
 
     public class TaskListNestedDto

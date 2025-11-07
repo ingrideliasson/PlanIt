@@ -12,10 +12,11 @@ export default function BoardCard({
   onStartEdit,
   onAskDelete,
   onOpen,
+  isOwner,
 }) {
   return (
     <div
-      className="w-full py-4 md:py-6 px-4 rounded-xl bg-element-50 text-neutral-100 font-montserrat text-lg flex justify-between items-center hover:shadow-card transition-shadow"
+      className="w-full py-4 md:py-6 px-4 rounded-xl bg-fuchsia-900 text-white font-montserrat text-lg flex justify-between items-center hover:shadow-card transition-shadow"
       onClick={onOpen}
     >
       {isEditing ? (
@@ -35,27 +36,29 @@ export default function BoardCard({
         <span className="cursor-pointer">{board.title}</span>
       )}
 
-      <div className="space-x-2">
-        <button
-          className="text-neutral-100 text-xl hover:scale-105"
-          onClick={(e) => {
-            e.stopPropagation();
-            onStartEdit();
-          }}
-        >
-          <CiEdit />
-        </button>
-        <button
-          className="text-neutral-100 text-xl hover:scale-105"
-          onClick={(e) => {
-            e.stopPropagation();
-            const rect = e.currentTarget.getBoundingClientRect();
-            onAskDelete({ top: rect.bottom, left: rect.left });
-          }}
-        >
-          <MdDeleteOutline />
-        </button>
-      </div>
+      {isOwner && (
+        <div className="space-x-2">
+          <button
+            className="text-neutral-100 text-xl hover:scale-105"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStartEdit();
+            }}
+          >
+            <CiEdit />
+          </button>
+          <button
+            className="text-neutral-100 text-xl hover:scale-105"
+            onClick={(e) => {
+              e.stopPropagation();
+              const rect = e.currentTarget.getBoundingClientRect();
+              onAskDelete({ top: rect.bottom, left: rect.left });
+            }}
+          >
+            <MdDeleteOutline />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

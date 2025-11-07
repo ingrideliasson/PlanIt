@@ -6,6 +6,7 @@ import AddTaskForm from "./AddTaskForm";
 
 export default function ListColumn({
   list,
+  listColors,
   editingListId,
   editedListTitle,
   onStartListEdit,
@@ -30,10 +31,17 @@ export default function ListColumn({
   onAskDeleteTask,
   onOpenAssign,
 }) {
+  const backgroundColor = listColors[list.colorIndex % listColors.length];
+
   return (
     <Droppable droppableId={list.id.toString()}>
       {(provided) => (
-        <div ref={provided.innerRef} {...provided.droppableProps} className="bg-white border border-surface-200 rounded-2xl p-4 flex-shrink-0 w-64 flex flex-col relative shadow-card">
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          className="bg-gray-400 rounded-2xl p-4 flex-shrink-0 w-64 flex flex-col relative shadow-md"
+          style={{ backgroundColor }}
+        >
           <div className="flex items-center justify-between mb-3">
             {editingListId === list.id ? (
               <input
@@ -46,10 +54,13 @@ export default function ListColumn({
                   if (e.key === "Escape") onCancelListEdit();
                 }}
                 autoFocus
-                className="bg-white text-surface-600 border-b border-surface-700 focus:outline-none text-sm ml-2 flex-1"
+                className="bg-white text-gray-500 border-b border-amber-950 focus:outline-none text-sm ml-2 flex-1"
               />
             ) : (
-              <h2 className="font-semibold text-surface-900 text-sm ml-2 cursor-pointer" onClick={() => onStartListEdit(list)}>
+              <h2
+                className="font-semibold text-neutral-700 tracking-wider text-sm ml-2 cursor-pointer"
+                onClick={() => onStartListEdit(list)}
+              >
                 {list.title ?? ""}
               </h2>
             )}
@@ -57,7 +68,7 @@ export default function ListColumn({
             <div className="flex gap-1">
               <button
                 type="button"
-                className="text-surface-800 hover:text-xl text-lg relative"
+                className="text-neutral-700 hover:text-xl text-lg relative"
                 title="Delete list"
                 onClick={onAskDeleteList}
               >
@@ -72,7 +83,12 @@ export default function ListColumn({
               .map((task, index) => (
                 <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
                   {(dragProvided, snapshot) => (
-                    <div ref={dragProvided.innerRef} {...dragProvided.draggableProps} {...dragProvided.dragHandleProps} className={snapshot.isDragging ? "shadow-lg" : ""}>
+                    <div
+                      ref={dragProvided.innerRef}
+                      {...dragProvided.draggableProps}
+                      {...dragProvided.dragHandleProps}
+                      className={snapshot.isDragging ? "shadow-lg" : ""}
+                    >
                       <TaskCard
                         task={task}
                         listId={list.id}
@@ -83,7 +99,7 @@ export default function ListColumn({
                         onSaveTitle={onSaveTaskTitle}
                         onCancelEdit={onCancelTaskEdit}
                         onToggleDone={onToggleTaskDone}
-                        onDelete={() => onAskDeleteTask(task.id)}
+                        onDelete={(rect) => onAskDeleteTask(list.id, task.id, rect)}
                         onOpenAssign={onOpenAssign}
                       />
                     </div>
@@ -98,11 +114,21 @@ export default function ListColumn({
               value={newTaskTitle}
               loading={addTaskLoading}
               onChange={(v) => onChangeTaskTitle(list.id, v)}
-              onSubmit={(e) => { e.preventDefault(); onCancelAddTask(); onSubmitAddTask(e, list.id); }}
-              onCancel={() => { onChangeTaskTitle(list.id, ""); onCancelAddTask(); }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                onCancelAddTask();
+                onSubmitAddTask(e, list.id);
+              }}
+              onCancel={() => {
+                onChangeTaskTitle(list.id, "");
+                onCancelAddTask();
+              }}
             />
           ) : (
-            <button onClick={() => onStartAddTask(list.id)} className="text-primary-900 hover:font-semibold text-sm text-left">
+            <button
+              onClick={() => onStartAddTask(list.id)}
+              className="text-neutral-700 hover:font-semibold text-sm text-left"
+            >
               <div className="p-2 rounded-lg">+ Add Task</div>
             </button>
           )}

@@ -17,10 +17,10 @@ export default function TaskCard({
   onOpenAssign,
 }) {
   return (
-    <li className="group bg-white text-surface-700 text-left font-opensans py-4 rounded-lg text-sm flex flex-col px-2 relative border border-surface-200">
+    <li className="group bg-white text-gray-600 text-left font-opensans py-4 rounded-lg text-sm flex flex-col px-2 relative">
       <button
         onClick={() => onToggleDone(listId, task)}
-        className={`absolute left-3 w-4 h-4 rounded-full border-2 flex items-center justify-center ${task.isCompleted ? "bg-lime-600 border-lime-600" : "border-surface-400"} ${task.isCompleted ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
+        className={`absolute left-3 w-4 h-4 rounded-full border-2 flex items-center justify-center ${task.isCompleted ? "bg-lime-600 border-lime-600" : "border-gray-400"} ${task.isCompleted ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}
       >
         {task.isCompleted && <div className="w-2 h-2 rounded-full bg-white"></div>}
       </button>
@@ -37,10 +37,13 @@ export default function TaskCard({
               if (e.key === "Escape") onCancelEdit();
             }}
             autoFocus
-            className="border-b border-surface-300 focus:outline-none w-full"
+            className="border-b border-gray-300 focus:outline-none w-full"
           />
         ) : (
-          <span onClick={() => onStartEdit(task)} className={`cursor-pointer ${task.isCompleted ? "line-through text-surface-400" : ""}`}>
+          <span
+            onClick={() => onStartEdit(task)}
+            className={`cursor-pointer ${task.isCompleted ? "line-through text-gray-400" : ""}`}
+          >
             {task.title ?? ""}
           </span>
         )}
@@ -48,16 +51,19 @@ export default function TaskCard({
 
       <button
         type="button"
-        className="absolute top-2 right-2 text-surface-400 hover:text-surface-700"
+        className="absolute top-2 right-2 text-gray-500 hover:text-neutral-700 hover:scale-105"
         title="Delete task"
-        onClick={onDelete}
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          onDelete(rect);
+        }}
       >
         <RxCross1 />
       </button>
 
       <button
         type="button"
-        className="absolute top-8 right-2 text-surface-400 hover:text-primary-700 text-sm"
+        className="absolute top-8 right-2 text-gray-500 hover:text-neutral-700 text-sm"
         onClick={() => onOpenAssign(task)}
         title="Assign members"
       >

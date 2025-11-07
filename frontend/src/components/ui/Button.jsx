@@ -16,8 +16,8 @@ export default function Button({
   const variants = {
     primary: "bg-transparent text-amber-950 hover:underline",
     outline: "border border-surface-300 text-surface-800 hover:bg-surface-50",
-    subtle: "bg-surface-100 text-surface-800 hover:bg-surface-200",
-    danger: "bg-rose-700 text-white hover:bg-rose-600",
+    subtle: "bg-gray-200 text-surface-800 hover:bg-gray-300",
+    danger: "bg-rose-700 text-white hover:bg-rose-800",
   };
   const cls = `${base} ${sizes[size]} ${variants[variant]} ${className}`;
   return <Component className={cls} {...props} />;

@@ -28,11 +28,17 @@ namespace backend.Controllers
 
             var boards = await _context.UserBoards
                 .Where(ub => ub.ApplicationUserId == user.Id)
+                .Include(ub => ub.Board)
+                    .ThenInclude(b => b.UserBoards)
                 .Select(ub => new BoardDto
                 {
                     Id = ub.Board.Id,
                     Title = ub.Board.Title,
-                    UserBoardId = ub.Id
+                    UserBoardId = ub.Id,
+                    Role = ub.Role,
+                    OwnerId = ub.Board.UserBoards.FirstOrDefault(ub2 => ub2.Role == "Owner") != null 
+                        ? ub.Board.UserBoards.FirstOrDefault(ub2 => ub2.Role == "Owner")!.ApplicationUserId 
+                        : null
                 })
                 .ToListAsync();
 
@@ -76,11 +82,14 @@ namespace backend.Controllers
                     ub.ColorIndex
                 }).ToList(),
 
-                TaskLists = boardEntity.TaskLists.Select(l => new
+                TaskLists = boardEntity.TaskLists
+                    .OrderBy(l => l.Position)
+                    .Select(l => new
                 {
                     l.Id,
                     l.Title,
                     l.ColorIndex,
+                    l.Position,
                     TaskItems = l.TaskItems
                         .OrderBy(t => t.Position)
                         .Select(t => new
@@ -130,7 +139,7 @@ namespace backend.Controllers
             _context.Boards.Add(board);
             await _context.SaveChangesAsync();
 
-            return Ok(new BoardDto { Id = board.Id, Title = board.Title, UserBoardId = userBoard.Id });
+            return Ok(new BoardDto { Id = board.Id, Title = board.Title, UserBoardId = userBoard.Id, Role = userBoard.Role });
         }
 
          // ✅ UPDATE title

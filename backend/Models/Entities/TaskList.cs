@@ -11,6 +11,7 @@ namespace backend.Models
         public Board Board { get; set; } = null!;
 
         public int ColorIndex { get; set; }
+        public int Position { get; set; } // Order of the list within the board
 
         public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
     }
