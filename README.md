@@ -1,6 +1,6 @@
 # Plan It
 
-Welcome to [Plan It](https://planit-z230.onrender.com/login)! This is a Trello-inspired web application that can be used for task management and issue tracking. It features full CRUD, full authentication/authorization, a colorful UI, and a Kanban view with smooth drag-and-dropping. 
+Welcome to [Plan It](https://planit-z230.onrender.com/login)! This is a Trello-inspired web application that can be used for task management and issue tracking. It features full CRUD, full authentication/authorization, a colorful UI, and a Kanban view with seamless drag-and-dropping. 
 
 ## Built with
 - ASP.NET Core WebAPI
