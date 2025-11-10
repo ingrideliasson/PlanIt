@@ -87,9 +87,10 @@ Click "Add new board" and enter a title. After the board is created, you can upd
 
 ### 4. Create lists and tasks
 
-You are now in the board view. Create a new list by cicking "Add new list" and enter a title. Add a task to the list by clicking "Add task" and enter a title. Click the title of the list to update it. Click the delete button to delete the list and all tasks on it. 
+You are now in the board view. Create a new list by cicking "Add new list" and enter a title. Add a task to the list by clicking "Add task" and enter a title. Click the title of the list to update it. Click the delete button to delete the list and all tasks on it. Lists can be reordered by dragging and dropping.
 
 <img width="901" height="496" alt="Skärmavbild 2025-11-07 kl  15 57 34" src="https://github.com/user-attachments/assets/e40e5567-3775-4ecb-a168-a9a36d937317" />
+
 
 ### 5. Task actions
 
